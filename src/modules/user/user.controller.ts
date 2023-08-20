@@ -7,15 +7,12 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Req,
-  UnauthorizedException,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { Request } from 'express';
 import { Protected, Public } from '../../decorators/auth.decorators';
 import { FilterKeysInterceptor } from '../../interceptors/filter-keys.interceptor';
-import { verifyUserOwnership } from '../../utils/auth';
+import { VerifyUserGuard } from '../guards/verify-user.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
@@ -48,26 +45,19 @@ export class UserController {
 
   @Patch(':id')
   @Protected()
+  @UseGuards(VerifyUserGuard)
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
-    @Req() req: Request,
   ) {
-    // 判断用户是否本人或者管理员
-    if (!verifyUserOwnership(req.user as User, id)) {
-      throw new UnauthorizedException('You are not the owner');
-    }
     const user = await this.userService.update(id, updateUserDto);
     return user;
   }
 
   @Delete(':id')
   @Protected()
-  async remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
-    // 判断用户是否本人或者管理员
-    if (!verifyUserOwnership(req.user as User, id)) {
-      throw new UnauthorizedException('You are not the owner');
-    }
+  @UseGuards(VerifyUserGuard)
+  async remove(@Param('id', ParseIntPipe) id: number) {
     const user = await this.userService.remove(id);
     return user;
   }

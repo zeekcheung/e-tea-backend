@@ -42,8 +42,8 @@ model Shop {
 
   name         String
   avatarUrl    String
-  introduction String
-  grade        Float
+  introduction String @default("")
+  grade        Float  @default(0.0)
   address      String
 
   // 店铺与用户的一对一关系
@@ -63,14 +63,14 @@ model Product {
 
   name        String
   imageUrl    String
-  description String?
-  stock       Int
-  sales       Int
-  status      Int
+  description String @default("")
+  stock       Int    @default(0)
+  sales       Int    @default(0)
+  status      Int    @default(0)
 
-  isExchangeable Boolean?
-  exchangeLimit  Int?
-  exchangeCost   Float?
+  isExchangeable Boolean @default(false)
+  exchangeLimit  Int     @default(0)
+  exchangeCost   Float   @default(0.0)
 
   // 店铺与商品的一对多关系
   shopId         Int
@@ -95,8 +95,8 @@ model ProductCategory {
   deletedAt DateTime?
 
   name        String
-  description String
-  order       Int    @default(autoincrement())
+  description String @default("")
+  order       Int
 
   // 商品与分类的多对多关系
   products Product[]
