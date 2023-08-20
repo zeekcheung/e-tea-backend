@@ -1,8 +1,13 @@
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  HttpStatus,
+  ValidationPipe,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module';
-import { PrismaClientExceptionFilter } from './prisma-client-exception/prisma-client-exception.filter';
+import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { LoggingMiddleware } from './middlewares/logging.middleware';
+import { AppModule } from './modules/app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,22 +21,24 @@ async function bootstrap() {
   // use ClassSerializerInterceptor to serialize the response
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  // config swagger
-  const swaggerConfig = new DocumentBuilder()
-    .setDescription('The Median API description')
-    .setVersion('0.1')
-    // "authenticate" yourself directly in swagger so that you can test these endpoints
-    .addBearerAuth()
-    .build();
-
-  // setup swagger
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api', app, document);
-
   // apply the exception filter to the entire application
   const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+  app.useGlobalFilters(
+    new PrismaClientExceptionFilter(httpAdapter, {
+      // Prisma Error Code: HTTP Status ResponseCode: HTTP Status Response
+      P2000: HttpStatus.BAD_REQUEST,
+      P2002: HttpStatus.CONFLICT,
+      P2025: HttpStatus.NOT_FOUND,
+    }),
+  );
 
-  await app.listen(3000);
+  app.use(LoggingMiddleware);
+
+  app.setGlobalPrefix('api');
+
+  const configService = app.get(ConfigService);
+  const port = configService.get<string>('PORT') ?? 3000;
+
+  await app.listen(port);
 }
 bootstrap();
