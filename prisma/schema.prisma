@@ -17,10 +17,20 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  phone    String
-  password String
-  role     Int
-  Shop     Shop?
+  role       Int
+  openid     String
+  sessionKey String @map("session_key")
+  phone      String
+  nickname   String @default("微信用户")
+  avatarUrl  String @default("https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0")
+
+  ProductComment ProductComment[]
+  Cart           Cart[]
+  Order          Order[]
+  Address        Address[]
+  Shop           Shop?
+
+  @@unique([openid, role])
 }
 
 // 店铺
@@ -38,7 +48,7 @@ model Shop {
 
   // 店铺与用户的一对一关系
   shopKeeperId    Int               @unique
-  shopKeeper      User              @relation(fields: [shopKeeperId], references: [id])
+  shopKeeper      User              @relation(fields: [shopKeeperId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // 店铺与商品的一对多关系
   products        Product[]
   ProductCategory ProductCategory[]
@@ -105,7 +115,8 @@ model ProductComment {
   content String
 
   // 商品评论与用户的多对一关系
-  userId    String
+  userId    Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // 商品与商品评论的一对多关系
   productId Int
   product   Product @relation(fields: [productId], references: [id])
@@ -138,7 +149,8 @@ model Cart {
   deletedAt DateTime?
 
   // 用户与购物车的一对一关系
-  userId String
+  userId Int
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // 购物车与购物车列表项的一对多关系
   items  CartItem[]
 }
@@ -177,7 +189,8 @@ model Order {
   totalPrice     Float
 
   // 用户与订单的一对多关系
-  userId    String
+  userId    Int
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // 订单与订单列表项的一对多关系
   items     OrderItem[]
   // 订单与收货地址的多对一关系
@@ -220,5 +233,6 @@ model Address {
   // 订单与收货地址的多对一关系
   orders Order[]
   // 用户与收货地址的一对多关系
-  userId String
+  userId Int
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

@@ -25,6 +25,7 @@ Starter template for [NestJS](https://github.com/nestjs/nest) and [Prisma](https
 2. Start the PostgreSQL database with Docker:
 
    ```bash
+   $ cp .env.example .env
    $ pnpm run docker:db
    ```
 

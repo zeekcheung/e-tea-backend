@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
 import {
   AUTH_KEY,
@@ -49,7 +50,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
     // 从请求头中获取 token
     const extractJwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<Request>();
     const token = extractJwtFromRequest(request);
     if (!token) {
       throw new UnauthorizedException();
@@ -59,7 +60,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         secret: jwtSecret,
       });
       // 判断用户是否存在
-      const user = await this.userService.findOne(payload.userId);
+      const user = await this.userService.findUnique(payload.userId);
       if (!user) {
         throw new NotFoundException(`No user found for id: ${payload.userId}`);
       }
@@ -69,6 +70,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
           `User ${user.id} is not authorized to access this resource`,
         );
       }
+      // 绑定用户信息到请求上下文
+      request.user = user;
       return true;
     } catch (error) {
       throw new UnauthorizedException(error.message);

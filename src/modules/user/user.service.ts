@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { ConflictException } from '../../exceptions/conflict.exception';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,23 +15,15 @@ export class UserService {
     // 判断用户是否存在
     const user = await this.prisma.user.findFirst({
       where: {
-        phone: createUserDto.phone,
+        openid: createUserDto.openid,
         role: createUserDto.role,
       },
     });
     if (user) {
-      throw new ConflictException('user already exists', {
-        id: user.id,
-      });
+      throw new ConflictException(
+        `user already exists, openid: ${user.openid}`,
+      );
     }
-
-    // 密码加密
-    const hashedPassword = await bcrypt.hash(
-      createUserDto.password,
-      roundsOfHashing,
-    );
-
-    createUserDto.password = hashedPassword;
 
     return this.prisma.user.create({ data: createUserDto });
   }
@@ -40,18 +32,15 @@ export class UserService {
     return this.prisma.user.findMany();
   }
 
-  findOne(id: number) {
+  findUnique(id: number) {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
+  findFirst(where: Prisma.UserWhereInput) {
+    return this.prisma.user.findFirst({ where });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
-    // decrypt the password
-    if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(
-        updateUserDto.password,
-        roundsOfHashing,
-      );
-    }
     return this.prisma.user.update({ where: { id }, data: updateUserDto });
   }
 

@@ -7,10 +7,15 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
+  UnauthorizedException,
   UseInterceptors,
 } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { Request } from 'express';
 import { Protected, Public } from '../../decorators/auth.decorators';
 import { FilterKeysInterceptor } from '../../interceptors/filter-keys.interceptor';
+import { verifyUserOwnership } from '../../utils/auth';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
@@ -37,7 +42,7 @@ export class UserController {
   @Get(':id')
   @Protected()
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.userService.findOne(id);
+    const user = await this.userService.findUnique(id);
     return user;
   }
 
@@ -46,16 +51,24 @@ export class UserController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() req: Request,
   ) {
+    // 判断用户是否本人或者管理员
+    if (!verifyUserOwnership(req.user as User, id)) {
+      throw new UnauthorizedException('You are not the owner');
+    }
     const user = await this.userService.update(id, updateUserDto);
     return user;
   }
 
   @Delete(':id')
   @Protected()
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    // 判断用户是否本人或者管理员
+    if (!verifyUserOwnership(req.user as User, id)) {
+      throw new UnauthorizedException('You are not the owner');
+    }
     const user = await this.userService.remove(id);
-    // return UserEntity instead of Prisma.User objects
     return user;
   }
 }

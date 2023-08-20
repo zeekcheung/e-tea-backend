@@ -4,9 +4,12 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
-    "phone" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
     "role" INTEGER NOT NULL,
+    "openid" TEXT NOT NULL,
+    "session_key" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "nickname" TEXT NOT NULL DEFAULT '微信用户',
+    "avatarUrl" TEXT NOT NULL DEFAULT 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -68,7 +71,7 @@ CREATE TABLE "ProductComment" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
     "content" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
     "productId" INTEGER NOT NULL,
 
     CONSTRAINT "ProductComment_pkey" PRIMARY KEY ("id")
@@ -93,7 +96,7 @@ CREATE TABLE "Cart" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
-    "userId" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Cart_pkey" PRIMARY KEY ("id")
 );
@@ -123,7 +126,7 @@ CREATE TABLE "Order" (
     "packingCharges" DOUBLE PRECISION NOT NULL,
     "paymentMethod" INTEGER NOT NULL,
     "totalPrice" DOUBLE PRECISION NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
     "addressId" INTEGER NOT NULL,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
@@ -153,7 +156,7 @@ CREATE TABLE "Address" (
     "receiverSex" INTEGER NOT NULL,
     "receiverLocation" TEXT NOT NULL,
     "receiverPhone" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
 );
@@ -171,6 +174,9 @@ CREATE TABLE "_ProductToProductSpecification" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_openid_role_key" ON "User"("openid", "role");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Shop_shopKeeperId_key" ON "Shop"("shopKeeperId");
 
 -- CreateIndex
@@ -186,7 +192,7 @@ CREATE UNIQUE INDEX "_ProductToProductSpecification_AB_unique" ON "_ProductToPro
 CREATE INDEX "_ProductToProductSpecification_B_index" ON "_ProductToProductSpecification"("B");
 
 -- AddForeignKey
-ALTER TABLE "Shop" ADD CONSTRAINT "Shop_shopKeeperId_fkey" FOREIGN KEY ("shopKeeperId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Shop" ADD CONSTRAINT "Shop_shopKeeperId_fkey" FOREIGN KEY ("shopKeeperId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "Shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -195,7 +201,13 @@ ALTER TABLE "Product" ADD CONSTRAINT "Product_shopId_fkey" FOREIGN KEY ("shopId"
 ALTER TABLE "ProductCategory" ADD CONSTRAINT "ProductCategory_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "Shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "ProductComment" ADD CONSTRAINT "ProductComment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "ProductComment" ADD CONSTRAINT "ProductComment_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Cart" ADD CONSTRAINT "Cart_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "Cart"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -205,6 +217,9 @@ ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_productId_fkey" FOREIGN KEY ("pr
 
 -- AddForeignKey
 ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_productSpecsId_fkey" FOREIGN KEY ("productSpecsId") REFERENCES "ProductSpecification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "Address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -217,6 +232,9 @@ ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productSpecsId_fkey" FOREIGN KEY ("productSpecsId") REFERENCES "ProductSpecification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ProductToProductCategory" ADD CONSTRAINT "_ProductToProductCategory_A_fkey" FOREIGN KEY ("A") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;

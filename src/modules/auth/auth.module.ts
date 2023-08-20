@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
@@ -22,6 +23,7 @@ export const jwtExpiresIn = 24 * 60 * 60 * 1000;
       signOptions: { expiresIn: jwtExpiresIn }, // e.g. 30s, 7d, 24h
     }),
     UserModule,
+    HttpModule,
   ],
   controllers: [AuthController],
   providers: [

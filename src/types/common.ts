@@ -12,14 +12,10 @@ export enum Role {
    * 商家
    */
   Shopkeeper = 1,
-}
-
-/**
- * 鉴权 Token
- */
-export interface Token {
-  userId: string;
-  role: Role;
+  /**
+   * 管理员
+   */
+  Admin = 2,
 }
 
 /**

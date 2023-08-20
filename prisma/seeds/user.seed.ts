@@ -1,27 +1,33 @@
 import { PrismaClient, User } from '@prisma/client';
-import * as bycrypt from 'bcrypt';
 import { ModelWithoutBaseInfo, chainPromises } from './common';
 
 type DummyUser = ModelWithoutBaseInfo<User>;
 
 export const createDummyUsers = async (prisma: PrismaClient) => {
-  const roundsOfHashing = 10;
-
   const userInfos: DummyUser[] = [
     {
       role: 0,
       phone: '12345678901',
-      password: await bycrypt.hash('Xy8@Lg2z!', roundsOfHashing),
+      openid: '12345678901',
+      sessionKey: '12345678901',
+      nickname: '张三',
+      avatarUrl: 'https://picsum.photos/200',
     },
     {
       role: 1,
       phone: '12345678902',
-      password: await bycrypt.hash('P#9sRj4n@', roundsOfHashing),
+      openid: '12345678902',
+      sessionKey: '12345678902',
+      nickname: '李四',
+      avatarUrl: 'https://picsum.photos/200',
     },
     {
       role: 1,
       phone: '12345678903',
-      password: await bycrypt.hash('D@5mGh1b$', roundsOfHashing),
+      openid: '12345678903',
+      sessionKey: '12345678903',
+      nickname: '王五',
+      avatarUrl: 'https://picsum.photos/200',
     },
   ];
 
