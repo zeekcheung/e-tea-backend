@@ -1,7 +1,10 @@
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import ms from 'ms';
 import { catchError, firstValueFrom } from 'rxjs';
+import { JWT_EXPIRES_IN_KEY } from '../../config/configuration';
 import {
   WxGetAccessTokenParams,
   WxGetAccessTokenResponseBoxy,
@@ -11,7 +14,6 @@ import {
   WxLoginResponseBoxy,
 } from '../../types/auth';
 import { UserService } from '../user/user.service';
-import { jwtExpiresIn } from './auth.module';
 import { LoginDto } from './dto/login.dto';
 import { AccessTokenPayload, AuthEntity } from './entities/auth.entity';
 
@@ -21,6 +23,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly httpService: HttpService,
     private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
   async login({
@@ -70,11 +73,12 @@ export class AuthService {
     }
 
     const payload: AccessTokenPayload = { userId: user.id };
+    const jwtExpiresIn = this.configService.get(JWT_EXPIRES_IN_KEY);
 
     // 生成 Token 并返回
     return {
       accessToken: this.jwtService.sign(payload),
-      accessTokenExpires: Date.now() + jwtExpiresIn,
+      accessTokenExpires: Date.now() + ms(jwtExpiresIn),
     };
   }
 

@@ -7,14 +7,17 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Auth, Public } from '../../decorators/auth.decorators';
+import { FilterKeysInterceptor } from '../../interceptors/filter-keys.interceptor';
 import { Role } from '../../types/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
 
 @Controller('product')
+@UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 

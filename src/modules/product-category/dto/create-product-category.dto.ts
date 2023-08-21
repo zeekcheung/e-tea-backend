@@ -1,5 +1,5 @@
 import { Prisma, ProductCategory } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import {
   IsArray,
   IsInt,
@@ -20,6 +20,10 @@ export class CreateProductCategoryDto {
   @MaxLength(50)
   @IsOptional()
   description?: ProductCategory['description'];
+
+  @IsInt()
+  @Exclude()
+  order: number;
 
   @IsInt()
   @IsNotEmpty()

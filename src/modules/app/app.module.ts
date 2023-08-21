@@ -1,6 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule, QueryInfo, loggingMiddleware } from 'nestjs-prisma';
+import configuration from '../../config/configuration';
 import { softDeleteMiddleware } from '../../middlewares/soft-delete.middleware';
 import { AuthModule } from '../auth/auth.module';
 import { ProductCategoryModule } from '../product-category/product-category.module';
@@ -13,6 +14,7 @@ import { AppService } from './app.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      load: [configuration],
       isGlobal: true,
     }),
     PrismaModule.forRoot({

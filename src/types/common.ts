@@ -1,20 +1,12 @@
 import { Prisma } from '@prisma/client';
 
-/**
- * 用户角色
- */
+/** 用户角色 */
 export enum Role {
-  /**
-   * 顾客
-   */
+  /** 顾客角色 */
   Customer = 0,
-  /**
-   * 商家
-   */
+  /** 商家角色 */
   Shopkeeper = 1,
-  /**
-   * 管理员
-   */
+  /** 管理员角色 */
   Admin = 2,
 }
 
@@ -26,24 +18,14 @@ export type SoftDeleteMiddle = (options: {
   targetField?: string;
 }) => Prisma.Middleware;
 
-/**
- * 商品售卖状态
- */
+/** 商品售卖状态 */
 export enum ProductStatus {
-  /**
-   * 审核中
-   */
+  /** 审核中 */
   UnderReview = 0,
-  /**
-   * 售卖中
-   */
+  /** 售卖中 */
   InStock,
-  /**
-   * 已售罄
-   */
+  /** 已售罄 */
   SoldOut,
-  /**
-   * 已下架
-   */
+  /** 已下架 */
   OffShelf,
 }

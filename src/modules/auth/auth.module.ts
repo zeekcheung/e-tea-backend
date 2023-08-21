@@ -1,26 +1,31 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from 'nestjs-prisma';
+import { JWT_EXPIRES_IN_KEY, JWT_SECRET_KEY } from '../../config/configuration';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
-// use OpenSSL to generate a private key:
-// openssl rand -base64 32
-export const jwtSecret = 'zjP9h6ZI5LoSKCRj';
-export const jwtExpiresIn = 24 * 60 * 60 * 1000;
-
 @Module({
   imports: [
     PrismaModule,
     PassportModule,
-    JwtModule.register({
-      secret: jwtSecret,
-      signOptions: { expiresIn: jwtExpiresIn }, // e.g. 30s, 7d, 24h
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const secret = configService.get(JWT_SECRET_KEY);
+        const expiresIn = configService.get(JWT_EXPIRES_IN_KEY);
+
+        return {
+          secret,
+          signOptions: { expiresIn }, // e.g. 30s, 7d, 24h
+        };
+      },
     }),
     UserModule,
     HttpModule,

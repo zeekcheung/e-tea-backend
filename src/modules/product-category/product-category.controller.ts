@@ -8,8 +8,10 @@ import {
   Patch,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Auth, Public } from '../../decorators/auth.decorators';
+import { FilterKeysInterceptor } from '../../interceptors/filter-keys.interceptor';
 import { Role } from '../../types/common';
 import { VerifyProductCategoryGuard } from '../guards/verify-product-category.guard';
 import { CreateProductCategoryDto } from './dto/create-product-category.dto';
@@ -18,6 +20,7 @@ import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
 import { ProductCategoryService } from './product-category.service';
 
 @Controller('product-category')
+@UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class ProductCategoryController {
   constructor(
     private readonly productCategoryService: ProductCategoryService,

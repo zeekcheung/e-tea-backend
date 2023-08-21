@@ -3,14 +3,47 @@ import {
   HttpStatus,
   ValidationPipe,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
+import { readFileSync } from 'fs';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import {
+  API_GLOBAL_PREFIX_KEY,
+  HTTPS_KEY,
+  PORT_KEY,
+  SSL_CERT,
+  SSL_KEY,
+  getConfiguration,
+} from './config/configuration';
+import { AllowPrivateNetworkMiddleware } from './middlewares/allow-private-network.middleware';
 import { LoggingMiddleware } from './middlewares/logging.middleware';
 import { AppModule } from './modules/app/app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // 读取配置
+  const getConfigByKeys = getConfiguration();
+  const config = getConfigByKeys(
+    API_GLOBAL_PREFIX_KEY,
+    PORT_KEY,
+    HTTPS_KEY,
+    SSL_KEY,
+    SSL_CERT,
+  );
+
+  const apiGlobalPrefix = config[API_GLOBAL_PREFIX_KEY];
+  const port = config[PORT_KEY];
+
+  const useHttps = config[HTTPS_KEY];
+  const sslKeyPath = config[SSL_KEY];
+  const sslCertPath = config[SSL_CERT];
+
+  // https
+  const httpsOptions = useHttps
+    ? { key: readFileSync(sslKeyPath), cert: readFileSync(sslCertPath) }
+    : null;
+
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions,
+  });
 
   // use pipes to perform input validation
   // use whitelist to filter unnecessary fields from client requests
@@ -32,13 +65,20 @@ async function bootstrap() {
     }),
   );
 
-  app.use(LoggingMiddleware);
+  // 注册全局中间件
+  app.use(LoggingMiddleware, AllowPrivateNetworkMiddleware);
 
-  app.setGlobalPrefix('api');
+  // 设置全局路由前缀
+  app.setGlobalPrefix(apiGlobalPrefix);
 
-  const configService = app.get(ConfigService);
-  const port = configService.get<string>('PORT') ?? 3000;
+  // 开启 CORS
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
 
   await app.listen(port);
+
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

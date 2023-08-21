@@ -29,7 +29,7 @@ export const LoggingMiddleware = (
   };
   res.end = function (chunk: any) {
     if (chunk) {
-      chunks.push(chunk);
+      chunks.push(Buffer.from(chunk));
     }
     // eslint-disable-next-line prefer-rest-params
     return oldEnd.apply(res, arguments);

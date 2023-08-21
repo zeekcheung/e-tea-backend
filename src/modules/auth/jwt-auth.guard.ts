@@ -4,11 +4,13 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
+import { JWT_SECRET_KEY } from '../../config/configuration';
 import {
   AUTH_KEY,
   IS_PROTECTED_KEY,
@@ -16,7 +18,6 @@ import {
 } from '../../decorators/auth.decorators';
 import { Role } from '../../types/common';
 import { UserService } from '../user/user.service';
-import { jwtSecret } from './auth.module';
 import { AccessTokenPayload } from './entities/auth.entity';
 
 @Injectable()
@@ -25,6 +26,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     private readonly reflector: Reflector,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {
     super();
   }
@@ -56,8 +58,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       throw new UnauthorizedException();
     }
     try {
+      const secret = this.configService.get(JWT_SECRET_KEY);
       const payload = this.jwtService.verify<AccessTokenPayload>(token, {
-        secret: jwtSecret,
+        secret,
       });
       // 判断用户是否存在
       const user = await this.userService.findUnique(payload.userId);
