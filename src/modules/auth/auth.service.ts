@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import ms from 'ms';
 import { catchError, firstValueFrom } from 'rxjs';
-import { JWT_EXPIRES_IN_KEY } from '../../config/configuration';
+import { JWT_EXPIRES_IN } from '../../config/configuration';
 import {
   WxGetAccessTokenParams,
   WxGetAccessTokenResponseBoxy,
@@ -73,7 +73,7 @@ export class AuthService {
     }
 
     const payload: AccessTokenPayload = { userId: user.id };
-    const jwtExpiresIn = this.configService.get(JWT_EXPIRES_IN_KEY);
+    const jwtExpiresIn = this.configService.get(JWT_EXPIRES_IN);
 
     // 生成 Token 并返回
     return {

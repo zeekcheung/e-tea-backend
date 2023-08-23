@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
-import { JWT_SECRET_KEY } from '../../config/configuration';
+import { JWT_SECRET } from '../../config/configuration';
 import {
   AUTH_KEY,
   IS_PROTECTED_KEY,
@@ -58,7 +58,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       throw new UnauthorizedException();
     }
     try {
-      const secret = this.configService.get(JWT_SECRET_KEY);
+      const secret = this.configService.get(JWT_SECRET);
       const payload = this.jwtService.verify<AccessTokenPayload>(token, {
         secret,
       });

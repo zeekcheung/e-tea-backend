@@ -1,4 +1,5 @@
 import { User } from '@prisma/client';
+import { Exclude } from 'class-transformer';
 import {
   IsEnum,
   IsNotEmpty,
@@ -19,7 +20,7 @@ export class CreateUserDto {
   openid: User['openid'];
 
   @IsString()
-  @IsNotEmpty()
+  @Exclude()
   sessionKey: User['sessionKey'];
 
   @IsPhoneNumber('CN')

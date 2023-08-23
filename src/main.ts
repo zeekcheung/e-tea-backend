@@ -7,8 +7,8 @@ import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { readFileSync } from 'fs';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import {
-  API_GLOBAL_PREFIX_KEY,
-  HTTPS_KEY,
+  API_GLOBAL_PREFIX,
+  HTTPS,
   PORT_KEY,
   SSL_CERT,
   SSL_KEY,
@@ -22,17 +22,17 @@ async function bootstrap() {
   // 读取配置
   const getConfigByKeys = getConfiguration();
   const config = getConfigByKeys(
-    API_GLOBAL_PREFIX_KEY,
+    API_GLOBAL_PREFIX,
     PORT_KEY,
-    HTTPS_KEY,
+    HTTPS,
     SSL_KEY,
     SSL_CERT,
   );
 
-  const apiGlobalPrefix = config[API_GLOBAL_PREFIX_KEY];
+  const apiGlobalPrefix = config[API_GLOBAL_PREFIX];
   const port = config[PORT_KEY];
 
-  const useHttps = config[HTTPS_KEY];
+  const useHttps = config[HTTPS];
   const sslKeyPath = config[SSL_KEY];
   const sslCertPath = config[SSL_CERT];
 

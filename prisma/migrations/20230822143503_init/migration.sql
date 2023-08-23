@@ -22,8 +22,8 @@ CREATE TABLE "Shop" (
     "deletedAt" TIMESTAMP(3),
     "name" TEXT NOT NULL,
     "avatarUrl" TEXT NOT NULL,
-    "introduction" TEXT NOT NULL,
-    "grade" DOUBLE PRECISION NOT NULL,
+    "introduction" TEXT NOT NULL DEFAULT '',
+    "grade" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "address" TEXT NOT NULL,
     "shopKeeperId" INTEGER NOT NULL,
 
@@ -38,13 +38,13 @@ CREATE TABLE "Product" (
     "deletedAt" TIMESTAMP(3),
     "name" TEXT NOT NULL,
     "imageUrl" TEXT NOT NULL,
-    "description" TEXT,
-    "stock" INTEGER NOT NULL,
-    "sales" INTEGER NOT NULL,
-    "status" INTEGER NOT NULL,
-    "isExchangeable" BOOLEAN,
-    "exchangeLimit" INTEGER,
-    "exchangeCost" DOUBLE PRECISION,
+    "description" TEXT NOT NULL DEFAULT '',
+    "stock" INTEGER NOT NULL DEFAULT 0,
+    "sales" INTEGER NOT NULL DEFAULT 0,
+    "status" INTEGER NOT NULL DEFAULT 0,
+    "isExchangeable" BOOLEAN NOT NULL DEFAULT false,
+    "exchangeLimit" INTEGER NOT NULL DEFAULT 0,
+    "exchangeCost" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "shopId" INTEGER NOT NULL,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
@@ -57,8 +57,8 @@ CREATE TABLE "ProductCategory" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "order" SERIAL NOT NULL,
+    "description" TEXT NOT NULL DEFAULT '',
+    "order" INTEGER NOT NULL,
     "shopId" INTEGER NOT NULL,
 
     CONSTRAINT "ProductCategory_pkey" PRIMARY KEY ("id")

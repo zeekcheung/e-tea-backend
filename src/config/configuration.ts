@@ -9,22 +9,27 @@ export default function configuration() {
   // 初始化所有环境变量
   return {
     [PORT_KEY]: parseInt(env[PORT_KEY], 10) || 3000,
-    [API_GLOBAL_PREFIX_KEY]: env[API_GLOBAL_PREFIX_KEY] || '',
+    [API_GLOBAL_PREFIX]: env[API_GLOBAL_PREFIX] || '',
 
-    [POSTGRES_USER_KEY]: env[POSTGRES_USER_KEY],
-    [POSTGRES_PASSWORD_KEY]: env[POSTGRES_PASSWORD_KEY],
-    [POSTGRES_DB_KEY]: env[POSTGRES_DB_KEY],
+    [POSTGRES_USER]: env[POSTGRES_USER],
+    [POSTGRES_PASSWORD]: env[POSTGRES_PASSWORD],
+    [POSTGRES_DB]: env[POSTGRES_DB],
 
-    [DB_HOST_KEY]: env[DB_HOST_KEY] || 'localhost',
-    [DB_PORT_KEY]: parseInt(env[DB_PORT_KEY], 10) || 5432,
-    [DB_SCHEMA_KEY]: env[DB_SCHEMA_KEY] || 'public',
+    [DB_HOST]: env[DB_HOST] || 'localhost',
+    [DB_PORT]: parseInt(env[DB_PORT], 10) || 5432,
+    [DB_SCHEMA]: env[DB_SCHEMA] || 'public',
 
-    [JWT_SECRET_KEY]: env[JWT_SECRET_KEY] || 'secret',
-    [JWT_EXPIRES_IN_KEY]: env[JWT_EXPIRES_IN_KEY] || '1d',
+    [JWT_SECRET]: env[JWT_SECRET] || 'secret',
+    [JWT_EXPIRES_IN]: env[JWT_EXPIRES_IN] || '1d',
 
-    [HTTPS_KEY]: env[HTTPS_KEY] || false,
+    [HTTPS]: env[HTTPS] || false,
     [SSL_KEY]: env[SSL_KEY] || './ssl/private.key',
     [SSL_CERT]: env[SSL_CERT] || './ssl/certificate.crt',
+
+    [OSS_ACCESS_KEY_ID]: env[OSS_ACCESS_KEY_ID],
+    [OSS_ACCESS_KEY_SECRET]: env[OSS_ACCESS_KEY_SECRET],
+    [OSS_TIMEOUT]: env[OSS_TIMEOUT] || 1,
+    [OSS_MAX_SIZE]: env[OSS_MAX_SIZE] || 10,
   };
 }
 
@@ -42,20 +47,25 @@ export function getConfiguration() {
     return pickKeys(config, keys);
   };
 }
-export const POSTGRES_USER_KEY = 'POSTGRES_USER';
-export const POSTGRES_PASSWORD_KEY = 'POSTGRES_PASSWORD';
-export const POSTGRES_DB_KEY = 'POSTGRES_HOST';
+export const POSTGRES_USER = 'POSTGRES_USER';
+export const POSTGRES_PASSWORD = 'POSTGRES_PASSWORD';
+export const POSTGRES_DB = 'POSTGRES_HOST';
 
-export const DB_HOST_KEY = 'DB_HOST';
-export const DB_PORT_KEY = 'DB_PORT';
-export const DB_SCHEMA_KEY = 'DB_SCHEMA';
+export const DB_HOST = 'DB_HOST';
+export const DB_PORT = 'DB_PORT';
+export const DB_SCHEMA = 'DB_SCHEMA';
 
 export const PORT_KEY = 'PORT';
-export const API_GLOBAL_PREFIX_KEY = 'API_GLOBAL_PREFIX';
+export const API_GLOBAL_PREFIX = 'API_GLOBAL_PREFIX';
 
-export const JWT_SECRET_KEY = 'JWT_ACCESS_SECRET';
-export const JWT_EXPIRES_IN_KEY = 'JWT_EXPIRES_IN';
+export const JWT_SECRET = 'JWT_ACCESS_SECRET';
+export const JWT_EXPIRES_IN = 'JWT_EXPIRES_IN';
 
-export const HTTPS_KEY = 'HTTPS';
+export const HTTPS = 'HTTPS';
 export const SSL_KEY = 'SSL_KEY';
 export const SSL_CERT = 'SSL_CERT';
+
+export const OSS_ACCESS_KEY_ID = 'OSS_ACCESS_KEY_ID';
+export const OSS_ACCESS_KEY_SECRET = 'OSS_ACCESS_KEY_SECRET';
+export const OSS_TIMEOUT = 'OSS_TIMEOUT';
+export const OSS_MAX_SIZE = 'OSS_MAX_SIZE';
