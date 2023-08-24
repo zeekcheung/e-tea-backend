@@ -9,7 +9,7 @@ import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import {
   API_GLOBAL_PREFIX,
   HTTPS_ENABLE,
-  PORT_KEY,
+  PORT,
   SSL_CERT,
   SSL_KEY,
   getConfiguration,
@@ -23,14 +23,14 @@ async function bootstrap() {
   const getConfigByKeys = getConfiguration();
   const config = getConfigByKeys(
     API_GLOBAL_PREFIX,
-    PORT_KEY,
+    PORT,
     HTTPS_ENABLE,
     SSL_KEY,
     SSL_CERT,
   );
 
   const apiGlobalPrefix = config[API_GLOBAL_PREFIX];
-  const port = config[PORT_KEY];
+  const port = config[PORT];
 
   const useHttps = config[HTTPS_ENABLE];
   const sslKeyPath = config[SSL_KEY];

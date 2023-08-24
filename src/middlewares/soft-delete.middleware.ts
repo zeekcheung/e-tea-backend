@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { SoftDeleteMiddle } from '../types/common';
+import { SoftDeleteMiddle } from '../types/middleware';
 
 /**
  * Generates a soft delete middleware function that can be used in an Nest.js application.

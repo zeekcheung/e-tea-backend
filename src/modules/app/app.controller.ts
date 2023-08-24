@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 @UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class AppController {
   constructor(private readonly appService: AppService) {}
+
   @Public()
   @Get()
   getHello(): string {

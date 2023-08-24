@@ -18,7 +18,7 @@ import {
 } from '../../decorators/auth.decorators';
 import { Role } from '../../types/common';
 import { UserService } from '../user/user.service';
-import { AccessTokenPayload } from './entities/auth.entity';
+import { IAccessTokenPayload } from './entities/auth.entity';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -63,7 +63,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
     try {
       const secret = this.configService.get(JWT_SECRET);
-      const payload = this.jwtService.verify<AccessTokenPayload>(token, {
+      const payload = this.jwtService.verify<IAccessTokenPayload>(token, {
         secret,
       });
       // 判断用户是否存在

@@ -13,5 +13,5 @@ export const verifyUserOwnership = (
   targetUserId: number,
 ) => {
   const isAdmin = currentUser.role === Role.Admin;
-  return isAdmin || currentUser?.id === targetUserId;
+  return isAdmin || currentUser.id === targetUserId;
 };

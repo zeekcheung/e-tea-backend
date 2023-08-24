@@ -8,7 +8,7 @@ export default function configuration() {
 
   // 初始化所有环境变量
   return {
-    [PORT_KEY]: parseInt(env[PORT_KEY], 10) || 3000,
+    [PORT]: parseInt(env[PORT], 10) || 3000,
     [API_GLOBAL_PREFIX]: env[API_GLOBAL_PREFIX] || '',
 
     [POSTGRES_USER]: env[POSTGRES_USER],
@@ -31,6 +31,9 @@ export default function configuration() {
     [OSS_ACCESS_KEY_SECRET]: env[OSS_ACCESS_KEY_SECRET],
     [OSS_TIMEOUT]: env[OSS_TIMEOUT] || 1,
     [OSS_MAX_SIZE]: env[OSS_MAX_SIZE] || 10,
+
+    [WX_APP_ID]: env[WX_APP_ID],
+    [WX_APP_SECRET]: env[WX_APP_SECRET],
   };
 }
 
@@ -56,7 +59,7 @@ export const DB_HOST = 'DB_HOST';
 export const DB_PORT = 'DB_PORT';
 export const DB_SCHEMA = 'DB_SCHEMA';
 
-export const PORT_KEY = 'PORT';
+export const PORT = 'PORT';
 export const API_GLOBAL_PREFIX = 'API_GLOBAL_PREFIX';
 
 export const JWT_ENABLE = 'JWT_ENABLE';
@@ -71,3 +74,6 @@ export const OSS_ACCESS_KEY_ID = 'OSS_ACCESS_KEY_ID';
 export const OSS_ACCESS_KEY_SECRET = 'OSS_ACCESS_KEY_SECRET';
 export const OSS_TIMEOUT = 'OSS_TIMEOUT';
 export const OSS_MAX_SIZE = 'OSS_MAX_SIZE';
+
+export const WX_APP_ID = 'WX_APP_ID';
+export const WX_APP_SECRET = 'WX_APP_SECRET';

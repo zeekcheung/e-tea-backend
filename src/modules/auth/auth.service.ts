@@ -1,42 +1,29 @@
-import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import ms from 'ms';
-import { catchError, firstValueFrom } from 'rxjs';
 import { JWT_EXPIRES_IN } from '../../config/configuration';
-import {
-  WxGetAccessTokenParams,
-  WxGetAccessTokenResponseBoxy,
-  WxGetPhoneNumberParams,
-  WxGetPhoneNumberResponseBoxy,
-  WxLoginParams,
-  WxLoginResponseBoxy,
-} from '../../types/auth';
 import { UserService } from '../user/user.service';
+import { WxService } from '../wx/wx.service';
 import { LoginDto } from './dto/login.dto';
-import { AccessTokenPayload, AuthEntity } from './entities/auth.entity';
+import { AuthEntity, IAccessTokenPayload } from './entities/auth.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly httpService: HttpService,
     private readonly userService: UserService,
     private readonly configService: ConfigService,
+    private readonly wxService: WxService,
   ) {}
 
   async login({
     role,
-    appId,
-    appSecret,
     loginCode,
     getPhoneNumberCode,
   }: LoginDto): Promise<AuthEntity> {
     // 微信登录
-    const { openid, session_key } = await this.wxLogin({
-      appId,
-      appSecret,
+    const { openid, session_key } = await this.wxService.login({
       code: loginCode,
     });
 
@@ -53,12 +40,10 @@ export class AuthService {
         sessionKey: session_key,
       });
     } else {
+      // 获取小程序接口调用凭证
+      const { access_token } = this.wxService.getAccessToken();
       // 获取用户手机号
-      const { access_token } = await this.wxGetAccessToken({
-        appId,
-        appSecret,
-      });
-      const { phone_info } = await this.wxGetPhoneNumber({
+      const { phone_info } = await this.wxService.getPhoneNumber({
         accessToken: access_token,
         code: getPhoneNumberCode,
       });
@@ -72,66 +57,13 @@ export class AuthService {
       });
     }
 
-    const payload: AccessTokenPayload = { userId: user.id };
+    const tokenPayload: IAccessTokenPayload = { userId: user.id };
     const jwtExpiresIn = this.configService.get(JWT_EXPIRES_IN);
 
     // 生成 Token 并返回
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(tokenPayload),
       accessTokenExpires: Date.now() + ms(jwtExpiresIn),
     };
-  }
-
-  private async wxLogin({
-    appId,
-    appSecret,
-    code,
-  }: WxLoginParams): Promise<WxLoginResponseBoxy> {
-    const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${appId}&secret=${appSecret}&js_code=${code}&grant_type=authorization_code`;
-    const { data } = await firstValueFrom(
-      this.httpService.get<WxLoginResponseBoxy>(url).pipe(
-        catchError((error: any) => {
-          throw new BadRequestException(error.response.data);
-        }),
-      ),
-    );
-    const { errcode, errmsg } = data;
-    if (errcode !== 0) {
-      throw new BadRequestException(errmsg);
-    }
-    return data;
-  }
-
-  private async wxGetPhoneNumber({
-    accessToken,
-    code,
-  }: WxGetPhoneNumberParams) {
-    const url = `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${accessToken}`;
-    const reqData = { code };
-
-    const { data } = await firstValueFrom(
-      this.httpService.post<WxGetPhoneNumberResponseBoxy>(url, reqData).pipe(
-        catchError((error: any) => {
-          throw new BadRequestException(error.response.data);
-        }),
-      ),
-    );
-    const { errcode, errmsg } = data;
-    if (errcode == -1 || errcode == 40029) {
-      throw new BadRequestException(errmsg);
-    }
-    return data;
-  }
-
-  private async wxGetAccessToken({ appId, appSecret }: WxGetAccessTokenParams) {
-    const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`;
-    const { data } = await firstValueFrom(
-      this.httpService.get<WxGetAccessTokenResponseBoxy>(url).pipe(
-        catchError((error: any) => {
-          throw new BadRequestException(error.response.data);
-        }),
-      ),
-    );
-    return data;
   }
 }

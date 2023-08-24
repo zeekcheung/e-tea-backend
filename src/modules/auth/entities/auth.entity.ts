@@ -1,4 +1,4 @@
-export interface AccessTokenPayload {
+export interface IAccessTokenPayload {
   userId: number;
 }
 

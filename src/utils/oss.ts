@@ -1,4 +1,4 @@
-import * as crypto from 'crypto-js';
+import crypto from 'crypto-js';
 import {
   IOssHelper,
   IOssOptions,
