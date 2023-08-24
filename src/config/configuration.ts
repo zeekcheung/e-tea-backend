@@ -19,10 +19,11 @@ export default function configuration() {
     [DB_PORT]: parseInt(env[DB_PORT], 10) || 5432,
     [DB_SCHEMA]: env[DB_SCHEMA] || 'public',
 
+    [JWT_ENABLE]: !!env[JWT_ENABLE] || false,
     [JWT_SECRET]: env[JWT_SECRET] || 'secret',
     [JWT_EXPIRES_IN]: env[JWT_EXPIRES_IN] || '1d',
 
-    [HTTPS]: env[HTTPS] || false,
+    [HTTPS_ENABLE]: !!env[HTTPS_ENABLE] || false,
     [SSL_KEY]: env[SSL_KEY] || './ssl/private.key',
     [SSL_CERT]: env[SSL_CERT] || './ssl/certificate.crt',
 
@@ -58,10 +59,11 @@ export const DB_SCHEMA = 'DB_SCHEMA';
 export const PORT_KEY = 'PORT';
 export const API_GLOBAL_PREFIX = 'API_GLOBAL_PREFIX';
 
+export const JWT_ENABLE = 'JWT_ENABLE';
 export const JWT_SECRET = 'JWT_ACCESS_SECRET';
 export const JWT_EXPIRES_IN = 'JWT_EXPIRES_IN';
 
-export const HTTPS = 'HTTPS';
+export const HTTPS_ENABLE = 'HTTPS_ENABLE';
 export const SSL_KEY = 'SSL_KEY';
 export const SSL_CERT = 'SSL_CERT';
 

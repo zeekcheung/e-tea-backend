@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
-import { JWT_SECRET } from '../../config/configuration';
+import { JWT_ENABLE, JWT_SECRET } from '../../config/configuration';
 import {
   AUTH_KEY,
   IS_PROTECTED_KEY,
@@ -32,6 +32,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext) {
+    // 是否开启 JWT 校验
+    if (!this.configService.get(JWT_ENABLE)) {
+      return true;
+    }
     const targets = [context.getHandler(), context.getClass()];
     // 所有用户都可以访问
     const isPublic = this.reflector.getAllAndOverride<boolean>(

@@ -1,5 +1,5 @@
 import { Prisma, ProductCategory } from '@prisma/client';
-import { Exclude, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsInt,
@@ -22,10 +22,6 @@ export class CreateProductCategoryDto {
   description?: ProductCategory['description'];
 
   @IsInt()
-  @Exclude()
-  order: number;
-
-  @IsInt()
   @IsNotEmpty()
   shopId: ProductCategory['shopId'];
 
@@ -40,7 +36,7 @@ export const CreateProductCategoryData = ({
   shopId,
   products = [],
   ...rest
-}: CreateProductCategoryDto) => {
+}: CreateProductCategoryDto & { order: number }) => {
   const data: Prisma.ProductCategoryCreateInput = {
     ...rest,
 

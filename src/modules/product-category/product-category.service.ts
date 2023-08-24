@@ -26,9 +26,11 @@ export class ProductCategoryService {
     const maxOrder = maxOrderProductCategory
       ? maxOrderProductCategory.order + 1
       : 1;
-    createProductCategoryDto.order = maxOrder;
 
-    const data = CreateProductCategoryData(createProductCategoryDto);
+    const data = CreateProductCategoryData({
+      ...createProductCategoryDto,
+      order: maxOrder,
+    });
 
     return this.prisma.productCategory.create({
       data: {

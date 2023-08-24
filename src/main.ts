@@ -8,7 +8,7 @@ import { readFileSync } from 'fs';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import {
   API_GLOBAL_PREFIX,
-  HTTPS,
+  HTTPS_ENABLE,
   PORT_KEY,
   SSL_CERT,
   SSL_KEY,
@@ -24,7 +24,7 @@ async function bootstrap() {
   const config = getConfigByKeys(
     API_GLOBAL_PREFIX,
     PORT_KEY,
-    HTTPS,
+    HTTPS_ENABLE,
     SSL_KEY,
     SSL_CERT,
   );
@@ -32,7 +32,7 @@ async function bootstrap() {
   const apiGlobalPrefix = config[API_GLOBAL_PREFIX];
   const port = config[PORT_KEY];
 
-  const useHttps = config[HTTPS];
+  const useHttps = config[HTTPS_ENABLE];
   const sslKeyPath = config[SSL_KEY];
   const sslCertPath = config[SSL_CERT];
 
