@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { SoftDeleteMiddle } from '../types/middleware';
+import { SoftDeleteMiddleware } from '../types/middleware';
 
 /**
  * Generates a soft delete middleware function that can be used in an Nest.js application.
@@ -8,11 +8,12 @@ import { SoftDeleteMiddle } from '../types/middleware';
  * @param targetField - the name of the field to use for marking deleted records
  * @return  - the generated soft delete middleware function
  */
-export const softDeleteMiddleware: SoftDeleteMiddle = ({
+export const softDeleteMiddleware: SoftDeleteMiddleware = ({
   targetModels = [],
   targetField = 'deletedAt',
 }) => {
   return async (params, next) => {
+    params.args = params.args || {};
     // Check incoming query type
     if (targetModels.includes(params.model)) {
       interceptDeleteQuery(params, targetField);
