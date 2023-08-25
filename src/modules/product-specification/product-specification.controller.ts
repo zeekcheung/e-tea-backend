@@ -23,7 +23,7 @@ export class ProductSpecificationController {
   ) {}
 
   @Post()
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   create(@Body() createProductSpecificationDto: CreateProductSpecificationDto) {
     return this.productSpecificationService.create(
       createProductSpecificationDto,
@@ -43,7 +43,7 @@ export class ProductSpecificationController {
   }
 
   @Patch(':id')
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   update(
     @Param('id') id: string,
     @Body() updateProductSpecificationDto: UpdateProductSpecificationDto,
@@ -55,7 +55,7 @@ export class ProductSpecificationController {
   }
 
   @Delete(':id')
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   remove(@Param('id') id: string) {
     return this.productSpecificationService.remove(+id);
   }

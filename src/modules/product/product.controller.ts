@@ -22,7 +22,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
@@ -40,7 +40,7 @@ export class ProductController {
   }
 
   @Patch(':id')
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProductDto: UpdateProductDto,
@@ -50,7 +50,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.remove(id);
   }

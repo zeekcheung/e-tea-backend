@@ -24,7 +24,7 @@ export class ShopController {
   constructor(private readonly shopService: ShopService) {}
 
   @Post()
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   create(@Body() createShopDto: CreateShopDto) {
     return this.shopService.create(createShopDto);
   }
@@ -42,7 +42,7 @@ export class ShopController {
   }
 
   @Patch(':id')
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   @UseGuards(VerifyShopkeeperGuard)
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -52,7 +52,7 @@ export class ShopController {
   }
 
   @Delete(':id')
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   @UseGuards(VerifyShopkeeperGuard)
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.shopService.remove(id);

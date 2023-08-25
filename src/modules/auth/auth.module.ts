@@ -6,7 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from 'nestjs-prisma';
 import { JWT_EXPIRES_IN, JWT_SECRET } from '../../config/configuration';
 import { UserModule } from '../user/user.module';
-import { WxService } from '../wx/wx.service';
+import { WxModule } from '../wx/wx.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -28,7 +28,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
       },
     }),
     UserModule,
-    WxService,
+    WxModule,
   ],
   controllers: [AuthController],
   providers: [

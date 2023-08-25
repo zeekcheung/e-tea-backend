@@ -1,63 +1,63 @@
 /** 用户角色 */
 export enum Role {
   /** 顾客角色 */
-  Customer = 0,
+  CUSTOMER = 0,
   /** 商家角色 */
-  Shopkeeper,
+  SHOPKEEPER,
   /** 管理员角色 */
-  Admin,
+  ADMIN,
 }
 
 /** 用户性别 */
 export enum Sex {
   /** 未知 */
-  Unknown = 0,
+  UNKNOWN = 0,
   /** 男性 */
-  Male,
+  MALE,
   /** 女性 */
-  Female,
+  FEMALE,
 }
 
 /** 商品售卖状态 */
 export enum ProductStatus {
   /** 审核中 */
-  UnderReview = 0,
+  UNDER_REVIEW = 0,
   /** 售卖中 */
-  InStock,
+  IN_STOCK,
   /** 已售罄 */
-  SoldOut,
+  SOLD_OUT,
   /** 已下架 */
-  OffShelf,
+  OFF_SHELF,
 }
 
 /** 订单状态 */
 export enum OrderStatus {
   /** 待支付 */
-  PendingPayment = 0,
+  PENDING_PAYMENT = 0,
   /** 待发货 */
-  PendingDelivery,
+  PENDING_DELIVERY,
   /** 待收货 */
-  PendingReceipt,
+  PENDING_RECEIPT,
   /** 待评价 */
-  PendingEvaluation,
+  PENDING_EVALUATION,
   /** 已完成 */
-  Finished,
+  FINISHED,
   /** 已取消 */
-  Canceled,
+  CANCELED,
 }
 
 /** 支付方式 */
 export enum PaymentMethod {
   /** 微信 */
-  Wechat = 0,
+  WECHAT_PAY = 0,
   /** 支付宝 */
-  Alipay,
+  ALIPAY,
 }
 
 /** 就餐方式 */
 export enum EatingMethod {
   /** 自取 */
-  TakeOut = 0,
+  TAKE_OUT = 0,
   /** 外卖 */
-  Delivery,
+  DELIVERY,
 }

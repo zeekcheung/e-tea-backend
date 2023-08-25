@@ -27,7 +27,7 @@ export class ProductCategoryController {
   ) {}
 
   @Post()
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   create(@Body() createProductCategoryDto: CreateProductCategoryDto) {
     return this.productCategoryService.create(createProductCategoryDto);
   }
@@ -45,7 +45,7 @@ export class ProductCategoryController {
   }
 
   @Patch(':id')
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   @UseGuards(VerifyProductCategoryGuard)
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -55,14 +55,14 @@ export class ProductCategoryController {
   }
 
   @Delete(':id')
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   @UseGuards(VerifyProductCategoryGuard)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productCategoryService.remove(id);
   }
 
   @Patch('reorder')
-  @Auth(Role.Shopkeeper)
+  @Auth(Role.SHOPKEEPER)
   @UseGuards(VerifyProductCategoryGuard)
   reorder(@Body() reorderProductCategoryDto: ReorderProductCategoryDto) {
     return this.productCategoryService.reorder(reorderProductCategoryDto);
