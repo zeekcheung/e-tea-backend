@@ -1,15 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
+import { ProductCategoryService } from '../product-category/product-category.service';
 import { CreateProductData, CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductData, UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly productCategoryService: ProductCategoryService,
+  ) {}
 
-  create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto) {
     return this.prisma.product.create({
-      data: CreateProductData(createProductDto),
+      data: await CreateProductData(
+        this.prisma,
+        this.productCategoryService,
+        createProductDto,
+      ),
     });
   }
 
@@ -21,10 +29,14 @@ export class ProductService {
     return this.prisma.product.findUnique({ where: { id } });
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
+  async update(id: number, updateProductDto: UpdateProductDto) {
     return this.prisma.product.update({
       where: { id },
-      data: UpdateProductData(updateProductDto),
+      data: await UpdateProductData(
+        this.productCategoryService,
+        updateProductDto,
+        id,
+      ),
     });
   }
 

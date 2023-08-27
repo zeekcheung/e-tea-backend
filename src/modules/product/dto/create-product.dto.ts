@@ -1,7 +1,6 @@
 import { Prisma, Product } from '@prisma/client';
-import { Type } from 'class-transformer';
 import {
-  IsArray,
+  ArrayNotEmpty,
   IsBoolean,
   IsInt,
   IsNotEmpty,
@@ -11,8 +10,13 @@ import {
   IsUrl,
   MaxLength,
   Min,
-  ValidateNested,
 } from 'class-validator';
+import { PrismaService } from 'nestjs-prisma';
+import { classifyIdAndDto } from '../../../utils/common';
+import { IsUnionArray } from '../../../validators/IsUnionArrayValidator';
+import { CreateProductCategoryDto } from '../../product-category/dto/create-product-category.dto';
+import { ProductCategoryService } from '../../product-category/product-category.service';
+import { CreateProductSpecificationDto } from '../../product-specification/dto/create-product-specification.dto';
 
 export class CreateProductDto {
   @IsString()
@@ -51,18 +55,31 @@ export class CreateProductDto {
   @IsNotEmpty()
   shopId: Product['shopId'];
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => Number)
+  // TODO: categories should support (id | Category)[]
+  @IsUnionArray(['number', CreateProductCategoryDto])
+  @ArrayNotEmpty()
   @IsOptional()
-  categories?: number[];
+  categories?: (number | CreateProductCategoryDto)[];
+
+  // TODO: specifications should support (id | Specification)[]
+  @IsUnionArray(['number', CreateProductSpecificationDto])
+  @ArrayNotEmpty()
+  @IsOptional()
+  specifications?: (number | CreateProductSpecificationDto)[];
 }
 
-export const CreateProductData = ({
-  shopId,
-  categories = [],
-  ...rest
-}: CreateProductDto) => {
+export const CreateProductData = async (
+  prisma: PrismaService,
+  productCategoryService: ProductCategoryService,
+  { shopId, categories = [], specifications = [], ...rest }: CreateProductDto,
+) => {
+  // 拆分 id 和 createDto
+  const [categoryIdArray, categoryDtoArray] = classifyIdAndDto(categories);
+  const [specificationIdArray, specificationDtoArray] =
+    classifyIdAndDto(specifications);
+  // 获取当前分类最大的 order
+  let maxCategoryOrder = await productCategoryService.getMaxOrder(shopId);
+
   const data: Prisma.ProductCreateInput = {
     ...rest,
 
@@ -71,7 +88,21 @@ export const CreateProductData = ({
       connect: { id: shopId },
     },
     categories: {
-      connect: categories.map((id) => ({ id })),
+      connect: categoryIdArray.map((id) => ({ id })),
+      create: categoryDtoArray.map(({ name, description }) => ({
+        name,
+        description,
+        order: ++maxCategoryOrder,
+        shopId,
+      })),
+    },
+    specifications: {
+      connect: specificationIdArray.map((id) => ({ id })),
+      create: specificationDtoArray.map(({ tag, name, price }) => ({
+        tag,
+        name,
+        price,
+      })),
     },
   };
 

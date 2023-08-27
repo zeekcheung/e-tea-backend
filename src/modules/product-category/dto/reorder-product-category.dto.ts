@@ -12,6 +12,7 @@ export class ReorderProductCategoryItem {
 }
 
 export class ReorderProductCategoryDto {
+  // FIX: validate array of union type
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ReorderProductCategoryItem)

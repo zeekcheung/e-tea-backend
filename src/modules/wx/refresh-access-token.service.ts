@@ -1,14 +1,18 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { WxService } from './wx.service';
+import { __DEV__ } from '../../utils/env';
 
 @Injectable()
 export class RefreshAccessTokenService implements OnModuleInit {
-  constructor(private readonly wxService: WxService) {}
+  constructor(private readonly wxService: WxService) { }
 
   /**
    * 定时刷新小程序的 access_token
    */
   onModuleInit() {
+    if (__DEV__) {
+      return;
+    }
     let { expires_in } = this.refreshAccessToken();
     setInterval(() => {
       const token = this.refreshAccessToken();

@@ -4,6 +4,8 @@ import { VerifyProductCategoryGuard } from './verify-product-category.guard';
 import { VerifyShopkeeperGuard } from './verify-shopkeeper.guard';
 import { VerifyUserGuard } from './verify-user.guard';
 
+// TODO: review guards module
+
 @Module({
   imports: [PrismaModule],
   providers: [

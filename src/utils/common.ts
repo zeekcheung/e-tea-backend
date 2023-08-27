@@ -36,3 +36,18 @@ export function pickKeys<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   });
   return result;
 }
+
+export function classifyIdAndDto<T extends number | object>(
+  items: T[],
+): [number[], Exclude<T, number>[]] {
+  const idArr = [];
+  const dtoArr = [];
+  items.forEach((item) => {
+    if (typeof item === 'number') {
+      idArr.push(item);
+    } else {
+      dtoArr.push(item);
+    }
+  });
+  return [idArr, dtoArr];
+}

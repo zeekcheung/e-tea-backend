@@ -8,6 +8,7 @@ import { createDummyUsers } from './seeds/user.seed';
 const prisma = new PrismaClient();
 
 async function main() {
+  // TODO: create dummy data
   const users = await createDummyUsers(prisma);
 
   const shops = await createDummyShops(prisma);

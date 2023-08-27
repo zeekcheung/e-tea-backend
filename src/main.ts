@@ -8,11 +8,11 @@ import { readFileSync } from 'fs';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import {
   API_GLOBAL_PREFIX,
+  getConfiguration,
   HTTPS_ENABLE,
   PORT,
   SSL_CERT,
   SSL_KEY,
-  getConfiguration,
 } from './config/configuration';
 import { AllowPrivateNetworkMiddleware } from './middlewares/allow-private-network.middleware';
 import { LoggingMiddleware } from './middlewares/logging.middleware';

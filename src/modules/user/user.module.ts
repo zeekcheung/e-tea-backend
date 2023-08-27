@@ -4,6 +4,8 @@ import { GuardsModule } from '../guards/guards.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
+// TODO: review user module
+
 @Module({
   imports: [PrismaModule, GuardsModule],
   controllers: [UserController],

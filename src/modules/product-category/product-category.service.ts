@@ -15,21 +15,11 @@ export class ProductCategoryService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createProductCategoryDto: CreateProductCategoryDto) {
-    // 将 order 设置为最大的
-    const maxOrderProductCategory = await this.prisma.productCategory.findFirst(
-      {
-        where: { shopId: createProductCategoryDto.shopId },
-        orderBy: { order: 'desc' },
-        select: { order: true },
-      },
-    );
-    const maxOrder = maxOrderProductCategory
-      ? maxOrderProductCategory.order + 1
-      : 1;
+    const maxOrder = await this.getMaxOrder(createProductCategoryDto.shopId);
 
     const data = CreateProductCategoryData({
       ...createProductCategoryDto,
-      order: maxOrder,
+      order: maxOrder + 1,
     });
 
     return this.prisma.productCategory.create({
@@ -68,5 +58,16 @@ export class ProductCategoryService {
         this.update(id, { order }),
       ),
     );
+  }
+
+  async getMaxOrder(shopId: number) {
+    const maxOrderProductCategory = await this.prisma.productCategory.findFirst(
+      {
+        where: { shopId },
+        orderBy: { order: 'desc' },
+        select: { order: true },
+      },
+    );
+    return maxOrderProductCategory ? maxOrderProductCategory.order : 0;
   }
 }
