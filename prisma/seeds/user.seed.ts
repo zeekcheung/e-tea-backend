@@ -1,32 +1,34 @@
 import { PrismaClient, User } from '@prisma/client';
-import { ModelWithoutBaseInfo, chainPromises } from './common';
+import { v4 as uuidv4 } from 'uuid';
+import { chainPromises, ModelWithoutBaseInfo } from './common';
+import { Role } from '../../src/types/model';
 
 type DummyUser = ModelWithoutBaseInfo<User>;
 
 export const createDummyUsers = async (prisma: PrismaClient) => {
   const userInfos: DummyUser[] = [
     {
-      role: 0,
+      role: Role.SHOPKEEPER,
+      openid: uuidv4(),
+      sessionKey: uuidv4(),
       phone: '12345678901',
-      openid: '12345678901',
-      sessionKey: '12345678901',
-      nickname: '张三',
+      nickname: 'Boss1',
       avatarUrl: 'https://picsum.photos/200',
     },
     {
-      role: 1,
+      role: Role.CUSTOMER,
+      openid: uuidv4(),
+      sessionKey: uuidv4(),
       phone: '12345678902',
-      openid: '12345678902',
-      sessionKey: '12345678902',
-      nickname: '李四',
+      nickname: 'Customer1',
       avatarUrl: 'https://picsum.photos/200',
     },
     {
-      role: 1,
+      role: Role.ADMIN,
+      openid: uuidv4(),
+      sessionKey: uuidv4(),
       phone: '12345678903',
-      openid: '12345678903',
-      sessionKey: '12345678903',
-      nickname: '王五',
+      nickname: 'Admin1',
       avatarUrl: 'https://picsum.photos/200',
     },
   ];

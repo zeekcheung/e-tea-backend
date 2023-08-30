@@ -1,10 +1,10 @@
+import { JWT_EXPIRES_IN } from '@/common/constant/config';
+import { UserService } from '@/modules/user/user.service';
+import { WxService } from '@/modules/wx/wx.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import ms from 'ms';
-import { JWT_EXPIRES_IN } from '../../config/configuration';
-import { UserService } from '../user/user.service';
-import { WxService } from '../wx/wx.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthEntity, IAccessTokenPayload } from './entities/auth.entity';
 
@@ -15,7 +15,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly wxService: WxService,
-  ) {}
+  ) { }
 
   async login({
     role,
@@ -58,7 +58,7 @@ export class AuthService {
     }
 
     const tokenPayload: IAccessTokenPayload = { userId: user.id };
-    const jwtExpiresIn = this.configService.get(JWT_EXPIRES_IN);
+    const jwtExpiresIn = this.configService.get<string>(JWT_EXPIRES_IN);
 
     // 生成 Token 并返回
     return {

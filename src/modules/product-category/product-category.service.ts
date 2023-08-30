@@ -1,32 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
-import {
-  CreateProductCategoryData,
-  CreateProductCategoryDto,
-} from './dto/create-product-category.dto';
+
+import { UpdateProductDto } from '../product/dto/update-product.dto';
+import { CreateProductCategoryDto } from './dto/create-product-category.dto';
 import { ReorderProductCategoryDto } from './dto/reorder-product-category.dto';
-import {
-  UpdateProductCategoryData,
-  UpdateProductCategoryDto,
-} from './dto/update-product-category.dto';
+import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
 
 @Injectable()
 export class ProductCategoryService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  async create(createProductCategoryDto: CreateProductCategoryDto) {
-    const maxOrder = await this.getMaxOrder(createProductCategoryDto.shopId);
-
-    const data = CreateProductCategoryData({
-      ...createProductCategoryDto,
-      order: maxOrder + 1,
-    });
-
-    return this.prisma.productCategory.create({
+  async create({ shopId, products, ...rest }: CreateProductCategoryDto) {
+    const maxOrder = await this.getMaxOrder(shopId);
+    const category = await this.prisma.productCategory.create({
       data: {
-        ...data,
+        ...rest,
+        order: maxOrder + 1,
+        shop: {
+          connect: { id: shopId },
+        },
       },
     });
+    // 建立关联
+    return this.connectOrCreateProducts(category.id, products);
   }
 
   findAll() {
@@ -39,11 +35,23 @@ export class ProductCategoryService {
     });
   }
 
-  update(id: number, updateProductCategoryDto: UpdateProductCategoryDto) {
-    return this.prisma.productCategory.update({
+  async update(
+    id: number,
+    {
+      addProducts = [],
+      removeProducts = [],
+      ...rest
+    }: UpdateProductCategoryDto,
+  ) {
+    const category = await this.prisma.productCategory.update({
       where: { id },
-      data: UpdateProductCategoryData(updateProductCategoryDto),
+      data: rest,
     });
+    // 建立关联
+    await this.connectOrCreateProducts(category.id, addProducts);
+    // 断开关联
+    await this.disconnectProducts(category.id, removeProducts);
+    return category;
   }
 
   remove(id: number) {
@@ -55,7 +63,10 @@ export class ProductCategoryService {
   async reorder(reorderProductCategoryDto: ReorderProductCategoryDto) {
     return await this.prisma.$transaction(
       reorderProductCategoryDto.items.map(({ id, order }) =>
-        this.update(id, { order }),
+        this.prisma.productCategory.update({
+          where: { id },
+          data: { order },
+        }),
       ),
     );
   }
@@ -69,5 +80,43 @@ export class ProductCategoryService {
       },
     );
     return maxOrderProductCategory ? maxOrderProductCategory.order : 0;
+  }
+
+  async connectOrCreateProducts(
+    id: number,
+    products: CreateProductCategoryDto['products'],
+  ) {
+    return this.prisma.productCategory.update({
+      where: { id },
+      data: {
+        products: {
+          connectOrCreate: products.map(({ id, shopId, ...rest }) => {
+            return {
+              where: { id },
+              create: {
+                ...rest,
+                shop: {
+                  connect: { id: shopId },
+                },
+              },
+            };
+          }),
+        },
+      },
+    });
+  }
+
+  disconnectProducts(
+    id: number,
+    products: UpdateProductDto['removeCategories'],
+  ) {
+    return this.prisma.productCategory.update({
+      where: { id },
+      data: {
+        products: {
+          disconnect: products.map((id) => ({ id })),
+        },
+      },
+    });
   }
 }

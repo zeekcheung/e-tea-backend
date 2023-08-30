@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import { Role } from '../types/common';
+import { Role } from '../types/model';
 
 /**
  * Verifies if the current user is the target user.
@@ -12,6 +12,10 @@ export const verifyUserOwnership = (
   currentUser: User,
   targetUserId: number,
 ) => {
+  if (!currentUser) {
+    return false;
+  }
   const isAdmin = currentUser.role === Role.ADMIN;
-  return isAdmin || currentUser.id === targetUserId;
+  const isOwner = currentUser.id === targetUserId;
+  return isAdmin || isOwner;
 };

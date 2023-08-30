@@ -23,12 +23,6 @@ export class CreateShopDto {
   @IsOptional()
   introduction?: Shop['introduction'];
 
-  // @IsNumber()
-  // @Min(0.0)
-  // @Max(5.0)
-  // @IsOptional()
-  // grade?: Shop['grade'];
-
   @IsString()
   @MaxLength(100)
   @IsNotEmpty()
@@ -39,7 +33,7 @@ export class CreateShopDto {
   shopKeeperId: Shop['shopKeeperId'];
 }
 
-export const createShopData = ({ shopKeeperId, ...rest }: CreateShopDto) => {
+export const CreateShopData = ({ shopKeeperId, ...rest }: CreateShopDto) => {
   const data: Prisma.ShopCreateInput = {
     ...rest,
 

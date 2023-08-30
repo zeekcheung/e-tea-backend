@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { GuardsModule } from '../guards/guards.module';
 import { ShopController } from './shop.controller';
 import { ShopService } from './shop.service';
+import { VerifyShopkeeperGuard } from './verify-shopkeeper.guard';
 
-// TODO: review shop module
+// TEST: 测试店铺模块
 
 @Module({
-  imports: [GuardsModule],
   controllers: [ShopController],
-  providers: [ShopService],
+  providers: [ShopService, VerifyShopkeeperGuard],
+  exports: [ShopService],
 })
-export class ShopModule {}
+export class ShopModule { }

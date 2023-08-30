@@ -1,3 +1,11 @@
+import { JWT_ENABLE, JWT_SECRET } from '@/common/constant/config';
+import {
+  AUTH_KEY,
+  IS_PROTECTED_KEY,
+  IS_PUBLIC_KEY,
+} from '@/common/decorators/auth.decorators';
+import { UserService } from '@/modules/user/user.service';
+import { Role } from '@/types/model';
 import {
   ExecutionContext,
   Injectable,
@@ -10,14 +18,6 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
-import { JWT_ENABLE, JWT_SECRET } from '../../config/configuration';
-import {
-  AUTH_KEY,
-  IS_PROTECTED_KEY,
-  IS_PUBLIC_KEY,
-} from '../../decorators/auth.decorators';
-import { Role } from '../../types/common';
-import { UserService } from '../user/user.service';
 import { IAccessTokenPayload } from './entities/auth.entity';
 
 @Injectable()
@@ -62,7 +62,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       throw new UnauthorizedException();
     }
     try {
-      const secret = this.configService.get(JWT_SECRET);
+      const secret = this.configService.get<string>(JWT_SECRET);
       const payload = this.jwtService.verify<IAccessTokenPayload>(token, {
         secret,
       });

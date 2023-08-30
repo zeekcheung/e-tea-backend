@@ -1,7 +1,4 @@
-export type DevNodeEnv = 'dev' | 'development';
-export type ProdNodeEnv = 'prod' | 'production';
-export type DebugNodeEnv = 'debug';
-export type NodeEnv = DevNodeEnv | ProdNodeEnv | DebugNodeEnv;
+import { NodeEnv } from '@/types/env';
 
 export const NODE_ENV = (process.env.NODE_ENV as NodeEnv) || 'dev';
 export const __DEV__ = NODE_ENV === 'dev' || NODE_ENV === 'development';

@@ -1,3 +1,6 @@
+import { Auth, Public } from '@/common/decorators/auth.decorators';
+import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
+import { Role } from '@/types/model';
 import {
   Body,
   Controller,
@@ -10,21 +13,18 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Auth, Public } from '../../decorators/auth.decorators';
-import { FilterKeysInterceptor } from '../../interceptors/filter-keys.interceptor';
-import { Role } from '../../types/common';
-import { VerifyProductCategoryGuard } from '../guards/verify-product-category.guard';
 import { CreateProductCategoryDto } from './dto/create-product-category.dto';
 import { ReorderProductCategoryDto } from './dto/reorder-product-category.dto';
 import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
 import { ProductCategoryService } from './product-category.service';
+import { VerifyProductCategoryGuard } from './verify-product-category.guard';
 
 @Controller('product-category')
 @UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class ProductCategoryController {
   constructor(
     private readonly productCategoryService: ProductCategoryService,
-  ) {}
+  ) { }
 
   @Post()
   @Auth(Role.SHOPKEEPER)
@@ -35,6 +35,7 @@ export class ProductCategoryController {
   @Get()
   @Public()
   findAll() {
+    // TODO: 模糊查询商品分类
     return this.productCategoryService.findAll();
   }
 

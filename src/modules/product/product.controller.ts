@@ -1,3 +1,6 @@
+import { Auth, Public } from '@/common/decorators/auth.decorators';
+import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
+import { Role } from '@/types/model';
 import {
   Body,
   Controller,
@@ -9,9 +12,6 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import { Auth, Public } from '../../decorators/auth.decorators';
-import { FilterKeysInterceptor } from '../../interceptors/filter-keys.interceptor';
-import { Role } from '../../types/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
@@ -30,6 +30,7 @@ export class ProductController {
   @Get()
   @Public()
   findAll() {
+    // TODO: 模糊查询商品
     return this.productService.findAll();
   }
 
@@ -41,16 +42,19 @@ export class ProductController {
 
   @Patch(':id')
   @Auth(Role.SHOPKEEPER)
+  // WARNING: @UseGuards(VerifyProductOwnerGuard) is not working
+  // @UseGuards(VerifyProductOwnerGuard)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProductDto: UpdateProductDto,
   ) {
-    // TODO: 完善更新库存和商品状态的逻辑
     return this.productService.update(id, updateProductDto);
   }
 
   @Delete(':id')
   @Auth(Role.SHOPKEEPER)
+  // WARNING: @UseGuards(VerifyProductOwnerGuard) is not working
+  // @UseGuards(VerifyProductOwnerGuard)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.remove(id);
   }

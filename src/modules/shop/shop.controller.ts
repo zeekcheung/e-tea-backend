@@ -1,3 +1,6 @@
+import { Auth, Public } from '@/common/decorators/auth.decorators';
+import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
+import { Role } from '@/types/model';
 import {
   Body,
   Controller,
@@ -10,18 +13,15 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Auth, Public } from '../../decorators/auth.decorators';
-import { FilterKeysInterceptor } from '../../interceptors/filter-keys.interceptor';
-import { Role } from '../../types/common';
-import { VerifyShopkeeperGuard } from '../guards/verify-shopkeeper.guard';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { ShopService } from './shop.service';
+import { VerifyShopkeeperGuard } from './verify-shopkeeper.guard';
 
 @Controller('shop')
 @UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class ShopController {
-  constructor(private readonly shopService: ShopService) {}
+  constructor(private readonly shopService: ShopService) { }
 
   @Post()
   @Auth(Role.SHOPKEEPER)
@@ -32,6 +32,7 @@ export class ShopController {
   @Get()
   @Public()
   findAll() {
+    // TODO: 模糊查询店铺
     return this.shopService.findAll();
   }
 

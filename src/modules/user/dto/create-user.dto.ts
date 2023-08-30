@@ -1,3 +1,4 @@
+import { Role } from '@/types/model';
 import { User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 import {
@@ -8,7 +9,6 @@ import {
   IsString,
   IsUrl,
 } from 'class-validator';
-import { Role } from '../../../types/common';
 
 export class CreateUserDto {
   @IsEnum(Role)
@@ -23,7 +23,7 @@ export class CreateUserDto {
   @Exclude()
   sessionKey: User['sessionKey'];
 
-  @IsPhoneNumber('CN')
+  @IsPhoneNumber()
   @IsNotEmpty()
   phone: User['phone'];
 

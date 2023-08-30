@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: e-tea-api-dev
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod-deps
+    volumes:
+      - .:/app
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    command: pnpm run start:dev
+
+  postgres:
+    image: postgres:15
+    container_name: e-tea-postgres-dev
+    restart: always
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env
+    volumes:
+      - postgres-dev:/var/lib/postgresql/data
+
+volumes:
+  postgres-dev:
+    name: e-tea-postgres-dev

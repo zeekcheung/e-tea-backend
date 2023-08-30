@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { SoftDeleteMiddleware } from '../types/middleware';
+import { SoftDeleteMiddleware } from '@/types/middleware';
 
 /**
  * Generates a soft delete middleware function that can be used in an Nest.js application.
@@ -16,6 +16,7 @@ export const softDeleteMiddleware: SoftDeleteMiddleware = ({
     params.args = params.args || {};
     // Check incoming query type
     if (targetModels.includes(params.model)) {
+      // TEST: 软删除中间件
       interceptDeleteQuery(params, targetField);
       interceptFindQuery(params, targetField);
       interceptUpdateQuery(params, targetField);

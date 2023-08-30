@@ -8,7 +8,7 @@ import { NextFunction, Request, Response } from 'express';
  * @param  res - The HTTP response object.
  * @param  next - The next middleware function.
  */
-export const LoggingMiddleware = (
+export const LoggingHttpMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -22,12 +22,12 @@ export const LoggingMiddleware = (
   const oldWrite = res.write;
   const oldEnd = res.end;
   const chunks = [];
-  res.write = function (chunk: any) {
+  res.write = function(chunk: any) {
     chunks.push(chunk);
     // eslint-disable-next-line prefer-rest-params
     return oldWrite.apply(res, arguments);
   };
-  res.end = function (chunk: any) {
+  res.end = function(chunk: any) {
     if (chunk) {
       chunks.push(Buffer.from(chunk));
     }

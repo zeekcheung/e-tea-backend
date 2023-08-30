@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
-import { ConflictException } from '../../exceptions/conflict.exception';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -9,22 +8,9 @@ export const roundsOfHashing = 10;
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
-    // 判断用户是否存在
-    const user = await this.prisma.user.findFirst({
-      where: {
-        openid: createUserDto.openid,
-        role: createUserDto.role,
-      },
-    });
-    if (user) {
-      throw new ConflictException(
-        `user already exists, openid: ${user.openid}`,
-      );
-    }
-
     return this.prisma.user.create({ data: createUserDto });
   }
 

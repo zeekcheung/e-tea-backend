@@ -10,3 +10,5 @@ export type Primitive =
 export type UndefinedOrNullable = undefined | null;
 
 export type Falsy = 0 | '' | false | null | undefined;
+
+export type ClassType = new (...args: any[]) => any;

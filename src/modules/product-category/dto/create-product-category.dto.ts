@@ -1,7 +1,9 @@
-import { Prisma, ProductCategory } from '@prisma/client';
+import { AddProductsItem } from '@/modules/product/dto/create-product.dto';
+import { IsConnectOrCreateItems } from '@/common/validators/IsConnectOrCreateItems.validator';
+import { OmitType } from '@nestjs/swagger';
+import { ProductCategory } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
-  IsArray,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -9,6 +11,7 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
+import { CREATE_PRODUCT_REQUIRED_KEYS } from '@/common/constant/dto';
 
 export class CreateProductCategoryDto {
   @IsString()
@@ -25,29 +28,18 @@ export class CreateProductCategoryDto {
   @IsNotEmpty()
   shopId: ProductCategory['shopId'];
 
-  @IsArray()
+  @IsConnectOrCreateItems(CREATE_PRODUCT_REQUIRED_KEYS)
   @ValidateNested({ each: true })
-  @Type(() => Number)
+  @Type(() => AddProductsItem)
   @IsOptional()
-  products: number[];
+  products?: AddProductsItem[];
 }
 
-export const CreateProductCategoryData = ({
-  shopId,
-  products = [],
-  ...rest
-}: CreateProductCategoryDto & { order: number }) => {
-  const data: Prisma.ProductCategoryCreateInput = {
-    ...rest,
-
-    // 建立关联
-    shop: {
-      connect: { id: shopId },
-    },
-    products: {
-      connect: products.map((id) => ({ id })),
-    },
-  };
-
-  return data;
-};
+export class AddProductCategoriesItem extends OmitType(
+  CreateProductCategoryDto,
+  ['products'],
+) {
+  @IsInt()
+  @IsOptional()
+  id: ProductCategory['id'];
+}

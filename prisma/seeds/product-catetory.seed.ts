@@ -1,5 +1,5 @@
 import { PrismaClient, ProductCategory } from '@prisma/client';
-import { ModelWithoutBaseInfo, chainPromises } from './common';
+import { chainPromises, ModelWithoutBaseInfo } from './common';
 
 type DummyProductCategory = ModelWithoutBaseInfo<ProductCategory> & {
   products: number[];
@@ -8,18 +8,18 @@ type DummyProductCategory = ModelWithoutBaseInfo<ProductCategory> & {
 export const createDummyProductCategories = async (prisma: PrismaClient) => {
   const productCategoryInfos: DummyProductCategory[] = [
     {
-      name: 'ProductCategory1',
-      description: 'This is my first product category',
+      name: 'Juice',
+      description: 'This is the first product category',
       order: 1,
       shopId: 1,
       products: [1, 2],
     },
     {
-      name: 'ProductCategory2',
-      description: 'This is my second product category',
+      name: 'Tea',
+      description: 'This is the second product category',
       order: 2,
       shopId: 1,
-      products: [1, 2],
+      products: [],
     },
   ];
 

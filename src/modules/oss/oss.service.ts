@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   OSS_ACCESS_KEY_ID,
   OSS_ACCESS_KEY_SECRET,
   OSS_MAX_SIZE,
   OSS_TIMEOUT,
-} from '../../config/configuration';
-import { IUploadParams } from '../../types/oss';
-import MpUploadOssHelper from '../../utils/oss';
+} from '@/common/constant/config';
+import { IUploadParams } from '@/types/oss';
+import MpUploadOssHelper from '@/utils/oss';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OssService {

@@ -1,5 +1,5 @@
+import { Role } from '@/types/model';
 import { SetMetadata } from '@nestjs/common';
-import { Role } from '../types/common';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const IS_PROTECTED_KEY = 'isProtected';

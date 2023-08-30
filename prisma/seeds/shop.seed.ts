@@ -1,17 +1,16 @@
 import { PrismaClient, Shop } from '@prisma/client';
-import { ModelWithoutBaseInfo, chainPromises } from './common';
+import { chainPromises, ModelWithoutBaseInfo } from './common';
 
-type DummyShop = ModelWithoutBaseInfo<Shop>;
+type DummyShop = Omit<ModelWithoutBaseInfo<Shop>, 'grade'>;
 
 export const createDummyShops = async (prisma: PrismaClient) => {
   const shopInfos: DummyShop[] = [
     {
-      name: 'My Shop1',
+      name: 'E-Tea',
       avatarUrl: 'https://picsum.photos/200',
-      introduction: 'This is my first shop',
-      grade: 0,
-      address: 'Shanghai',
-      shopKeeperId: 2,
+      introduction: 'This is the first shop',
+      address: 'ZhongShan',
+      shopKeeperId: 1,
     },
   ];
 

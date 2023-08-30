@@ -1,26 +1,29 @@
+import { Auth, Public } from '@/common/decorators/auth.decorators';
+import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
+import { Role } from '@/types/model';
 import {
   Body,
   Controller,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Auth, Public } from '../../decorators/auth.decorators';
-import { FilterKeysInterceptor } from '../../interceptors/filter-keys.interceptor';
-import { Role } from '../../types/common';
 import { CreateProductSpecificationDto } from './dto/create-product-specification.dto';
 import { UpdateProductSpecificationDto } from './dto/update-product-specification.dto';
 import { ProductSpecificationService } from './product-specification.service';
+import { VerifyProductSpecificationGuard } from './verify-product-specification.guard';
 
 @Controller('product-specification')
 @UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class ProductSpecificationController {
   constructor(
     private readonly productSpecificationService: ProductSpecificationService,
-  ) {}
+  ) { }
 
   @Post()
   @Auth(Role.SHOPKEEPER)
@@ -33,30 +36,33 @@ export class ProductSpecificationController {
   @Get()
   @Public()
   findAll() {
+    // TODO: 模糊查询商品规格
     return this.productSpecificationService.findAll();
   }
 
   @Get(':id')
   @Public()
-  findOne(@Param('id') id: string) {
-    return this.productSpecificationService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.productSpecificationService.findOne(id);
   }
 
   @Patch(':id')
   @Auth(Role.SHOPKEEPER)
+  @UseGuards(VerifyProductSpecificationGuard)
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateProductSpecificationDto: UpdateProductSpecificationDto,
   ) {
     return this.productSpecificationService.update(
-      +id,
+      id,
       updateProductSpecificationDto,
     );
   }
 
   @Delete(':id')
   @Auth(Role.SHOPKEEPER)
-  remove(@Param('id') id: string) {
-    return this.productSpecificationService.remove(+id);
+  @UseGuards(VerifyProductSpecificationGuard)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.productSpecificationService.remove(id);
   }
 }

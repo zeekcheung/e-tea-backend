@@ -19,16 +19,16 @@ model User {
 
   role       Int
   openid     String
-  sessionKey String @map("session_key")
+  sessionKey String
   phone      String
   nickname   String @default("微信用户")
   avatarUrl  String @default("https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0")
 
-  ProductComment ProductComment[]
-  Cart           Cart[]
-  Order          Order[]
-  Address        Address[]
-  Shop           Shop?
+  shop Shop?
+  // cart    Cart
+  // orders  Order[]
+  // Address Address[]
+  // comments Comment[]
 
   @@unique([openid, role])
 }
@@ -47,11 +47,12 @@ model Shop {
   address      String
 
   // 店铺与用户的一对一关系
-  shopKeeperId    Int               @unique
-  shopKeeper      User              @relation(fields: [shopKeeperId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  shopKeeperId Int               @unique
+  shopKeeper   User              @relation(fields: [shopKeeperId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // 店铺与商品的一对多关系
-  products        Product[]
-  ProductCategory ProductCategory[]
+  products     Product[]
+  // 店铺与分类的一对多关系
+  categories   ProductCategory[]
 }
 
 // 商品
@@ -74,17 +75,17 @@ model Product {
 
   // 店铺与商品的一对多关系
   shopId         Int
-  shop           Shop                   @relation(fields: [shopId], references: [id])
+  shop           Shop                   @relation(fields: [shopId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // 商品与分类的多对多关系
-  categories     ProductCategory[]
-  // 商品与评论的一对多关系
-  comments       ProductComment[]
+  categories     ProductCategory[]      @relation("ProductsOnCategories")
   // 商品与规格的多对多关系
-  specifications ProductSpecification[]
+  specifications ProductSpecification[] @relation("ProductsOnSpecifications")
+  // 商品与评论的一对多关系
+  // comments       Comment[]
   // 商品与购物车列表项的一对多关系
-  cartItems      CartItem[]
+  // cartItems      CartItem[]
   // 商品与订单列表项的一对多关系
-  orderItmes     OrderItem[]
+  // orderItmes     OrderItem[]
 }
 
 // 商品分类
@@ -98,28 +99,11 @@ model ProductCategory {
   description String @default("")
   order       Int
 
-  // 商品与分类的多对多关系
-  products Product[]
   // 商店与分类的一对多关系
   shopId   Int
-  shop     Shop      @relation(fields: [shopId], references: [id])
-}
-
-// 商品评论
-model ProductComment {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  content String
-
-  // 商品评论与用户的多对一关系
-  userId    Int
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  // 商品与商品评论的一对多关系
-  productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  shop     Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // 商品与分类的多对多关系
+  products Product[] @relation("ProductsOnCategories")
 }
 
 // 商品规格
@@ -134,105 +118,123 @@ model ProductSpecification {
   price Float
 
   // 商品与商品规格的多对多关系
-  products   Product[]
+  products Product[] @relation("ProductsOnSpecifications")
   // 商品规格与购物车列表项的一对多关系
-  cartItems  CartItem[]
+  // cartItems  CartItem[]
   // 商品规格与订单列表项的一对多关系
-  orderItems OrderItem[]
+  // orderItems OrderItem[]
 }
+
+// 评论
+// model Comment {
+//   id        Int       @id @default(autoincrement())
+//   createdAt DateTime  @default(now()) 
+//   updatedAt DateTime  @updatedAt 
+//   deletedAt DateTime? 
+//
+//   content String
+//
+//   // 商品评论与用户的多对一关系
+//   userId    Int
+//   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   // 商品与商品评论的一对多关系
+//   productId Int
+//   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+// }
 
 // 购物车
-model Cart {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  // 用户与购物车的一对一关系
-  userId Int
-  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  // 购物车与购物车列表项的一对多关系
-  items  CartItem[]
-}
+// model Cart {
+//   id        Int       @id @default(autoincrement())
+//   createdAt DateTime  @default(now()) 
+//   updatedAt DateTime  @updatedAt 
+//   deletedAt DateTime? 
+//
+//   // 用户与购物车的一对一关系
+//   userId Int
+//   user   User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   // 购物车与购物车列表项的一对多关系
+//   items  CartItem[]
+// }
 
 // 购物车列表项
-model CartItem {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  count Int
-
-  // 购物车与购物车列表项的一对多关系
-  cartId               Int
-  cart                 Cart                 @relation(fields: [cartId], references: [id])
-  //商品与购物车列表项的一对多关系
-  productId            Int
-  product              Product              @relation(fields: [productId], references: [id])
-  // 商品规格与购物车列表项的一对多关系
-  productSpecsId       Int
-  productSpecification ProductSpecification @relation(fields: [productSpecsId], references: [id])
-}
+// model CartItem {
+//   id        Int       @id @default(autoincrement())
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   deletedAt DateTime?
+//
+//   count Int
+//
+//   // 购物车与购物车列表项的一对多关系
+//   cartId               Int
+//   cart                 Cart                 @relation(fields: [cartId], references: [id])
+//   //商品与购物车列表项的一对多关系
+//   productId            Int
+//   product              Product              @relation(fields: [productId], references: [id])
+//   // 商品规格与购物车列表项的一对多关系
+//   productSpecsId       Int
+//   productSpecification ProductSpecification @relation(fields: [productSpecsId], references: [id])
+// }
 
 // 订单
-model Order {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  status         Int
-  remarks        String
-  packingCharges Float
-  paymentMethod  Int
-  totalPrice     Float
-
-  // 用户与订单的一对多关系
-  userId    Int
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  // 订单与订单列表项的一对多关系
-  items     OrderItem[]
-  // 订单与收货地址的多对一关系
-  addressId Int
-  address   Address     @relation(fields: [addressId], references: [id])
-}
+// model Order {
+//   id        Int       @id @default(autoincrement())
+//   createdAt DateTime  @default(now()) 
+//   updatedAt DateTime  @updatedAt 
+//   deletedAt DateTime? 
+//
+//   status         Int
+//   remarks        String
+//   packingCharges Float
+//   paymentMethod  Int
+//   totalPrice     Float
+//
+//   // 用户与订单的一对多关系
+//   userId    Int
+//   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   // 订单与订单列表项的一对多关系
+//   items     OrderItem[]
+//   // 订单与收货地址的多对一关系
+//   addressId Int
+//   address   Address     @relation(fields: [addressId], references: [id])
+// }
 
 // 订单列表项
-model OrderItem {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+// model OrderItem {
+//   id        Int       @id @default(autoincrement())
+//   createdAt DateTime  @default(now()) 
+//   updatedAt DateTime  @updatedAt 
+//   deletedAt DateTime? 
+//
+//   count Int
+//
+//   // 订单与订单列表项的一对多关系
+//   orderId              Int
+//   order                Order                @relation(fields: [orderId], references: [id])
+//   // 订单列表项与商品的多对一关系
+//   productId            Int
+//   product              Product              @relation(fields: [productId], references: [id])
+//   // 订单列表项与商品规格的多对一关系
+//   productSpecsId       Int
+//   productSpecification ProductSpecification @relation(fields: [productSpecsId], references: [id])
+// }
 
-  count Int
-
-  // 订单与订单列表项的一对多关系
-  orderId              Int
-  order                Order                @relation(fields: [orderId], references: [id])
-  // 订单列表项与商品的多对一关系
-  productId            Int
-  product              Product              @relation(fields: [productId], references: [id])
-  // 订单列表项与商品规格的多对一关系
-  productSpecsId       Int
-  productSpecification ProductSpecification @relation(fields: [productSpecsId], references: [id])
-}
-
-// 收获地址
-model Address {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  receiverName     String
-  receiverSex      Int
-  receiverLocation String
-  receiverPhone    String
-
-  // 订单与收货地址的多对一关系
-  orders Order[]
-  // 用户与收货地址的一对多关系
-  userId Int
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-}
+// // 收获地址
+// model Address {
+//   id        Int       @id @default(autoincrement())
+//   createdAt DateTime  @default(now()) 
+//   updatedAt DateTime  @updatedAt 
+//   deletedAt DateTime? 
+//
+//   receiverName     String
+//   receiverSex      Int
+//   receiverLocation String
+//   receiverPhone    String
+//
+//   // 用户与收货地址的一对多关系
+//   userId Int
+//   user   User
+//   // 订单与收货地址的多对一关系
+//   orders Order[]
+//   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+// }

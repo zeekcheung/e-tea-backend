@@ -1,3 +1,4 @@
+import { omitKeysFromObject } from '@/utils/base';
 import {
   CallHandler,
   ExecutionContext,
@@ -6,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Observable, tap } from 'rxjs';
-import { filterKeysFromObject } from '../utils/common';
 
 @Injectable()
 class FilterInterceptor implements NestInterceptor {
@@ -20,7 +20,7 @@ class FilterInterceptor implements NestInterceptor {
       tap((data) => {
         // 记录转换后的 response
         const res = context.switchToHttp().getResponse<Response>();
-        res.locals.transformedResponse = filterKeysFromObject(
+        res.locals.transformedResponse = omitKeysFromObject(
           data,
           this.targetKeys,
         );

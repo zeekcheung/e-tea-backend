@@ -1,14 +1,14 @@
 import { PrismaClient } from '@prisma/client';
-import { createDummyProductCategories } from './seeds/product-catetory.seed';
 import { createDummyProducts } from './seeds/product.seed';
 import { createDummyShops } from './seeds/shop.seed';
 import { createDummyUsers } from './seeds/user.seed';
+import { createDummyProductCategories } from './seeds/product-catetory.seed';
+import { createDummyProductSpecifications } from './seeds/product-specification.seed';
 
 // initialize Prisma Client
 const prisma = new PrismaClient();
 
 async function main() {
-  // TODO: create dummy data
   const users = await createDummyUsers(prisma);
 
   const shops = await createDummyShops(prisma);
@@ -17,11 +17,14 @@ async function main() {
 
   const productCategories = await createDummyProductCategories(prisma);
 
+  const productSpecifications = await createDummyProductSpecifications(prisma);
+
   console.log({
     users,
     shops,
     products,
     productCategories,
+    productSpecifications,
   });
 }
 

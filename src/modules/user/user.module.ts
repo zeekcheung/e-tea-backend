@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'nestjs-prisma';
-import { GuardsModule } from '../guards/guards.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { VerifyUserGuard } from './verify-user.guard';
 
-// TODO: review user module
+// TEST: 测试用户模块
 
 @Module({
-  imports: [PrismaModule, GuardsModule],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, VerifyUserGuard],
   exports: [UserService],
 })
-export class UserModule {}
+export class UserModule { }

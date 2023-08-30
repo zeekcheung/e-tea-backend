@@ -10,37 +10,35 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Protected, Public } from '../../decorators/auth.decorators';
-import { FilterKeysInterceptor } from '../../interceptors/filter-keys.interceptor';
-import { VerifyUserGuard } from '../guards/verify-user.guard';
+import { VerifyUserGuard } from './verify-user.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
+import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
+import { Protected, Public } from '@/common/decorators/auth.decorators';
 
 @Controller('user')
 @UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post()
   @Public()
   async create(@Body() createUserDto: CreateUserDto) {
-    const user = await this.userService.create(createUserDto);
-    return user;
+    return await this.userService.create(createUserDto);
   }
 
   @Get()
   @Protected()
   async findAll() {
-    const users = await this.userService.findAll();
-    return users;
+    // TODO:模糊查询
+    return await this.userService.findAll();
   }
 
   @Get(':id')
   @Protected()
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.userService.findUnique(id);
-    return user;
+    return await this.userService.findUnique(id);
   }
 
   @Patch(':id')
@@ -50,15 +48,13 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const user = await this.userService.update(id, updateUserDto);
-    return user;
+    return await this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @Protected()
   @UseGuards(VerifyUserGuard)
   async remove(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.userService.remove(id);
-    return user;
+    return await this.userService.remove(id);
   }
 }

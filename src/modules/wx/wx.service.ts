@@ -1,8 +1,4 @@
-import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { catchError, firstValueFrom } from 'rxjs';
-import { WX_APP_ID, WX_APP_SECRET } from '../../config/configuration';
+import { WX_APP_ID, WX_APP_SECRET } from '@/common/constant/config';
 import {
   IWxAppInfo,
   IWxGetAccessTokenResponseBoxy,
@@ -10,7 +6,11 @@ import {
   IWxGetPhoneNumberResponseBoxy,
   IWxLoginParams,
   IWxLoginResponseBoxy,
-} from '../../types/wx';
+} from '@/types/wx';
+import { HttpService } from '@nestjs/axios';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { catchError, firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class WxService {
