@@ -1,4 +1,4 @@
-export interface IOssOptions {
+export interface OssOptions {
   /** 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户并授权 */
   accessKeyId: string;
   accessKeySecret: string;
@@ -11,14 +11,14 @@ export interface IOssOptions {
 export type Policy = string;
 export type Signature = string;
 
-export interface IUploadParams {
+export interface UploadParams {
   OSSAccessKeyId: string;
   policy: Policy;
   signature: Signature;
 }
 
-export interface IOssHelper extends IOssOptions {
-  createUploadParams(): IUploadParams;
+export interface IOssHelper extends OssOptions {
+  createUploadParams(): UploadParams;
   getPolicyBase64(): Policy;
   getSignature(policy: Policy): Signature;
 }

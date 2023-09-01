@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
-import { Public } from '../../common/decorators/auth.decorators';
 import { OssService } from './oss.service';
+import { Public } from '@/common/decorators/auth.decorators';
 
 @Controller('oss')
 export class OssController {

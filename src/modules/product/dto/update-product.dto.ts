@@ -7,26 +7,27 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import {
-  CREATE_PRODUCT_CATEGORY_REQUIRED_KEYS,
-  CREATE_PRODUCT_SPECIFICATION_REQUIRED_KEYS,
-} from '../../../common/constant/dto';
-import { IsConnectOrCreateItems } from '../../../common/validators/IsConnectOrCreateItems.validator';
-import { AddProductCategoriesItem } from '../../product-category/dto/create-product-category.dto';
-import { AddProductSpecificationsItem } from '../../product-specification/dto/create-product-specification.dto';
+
 import { CreateProductDto } from './create-product.dto';
+import { IsConnectOrCreateItems } from '@/common/validators/IsConnectOrCreateItems.validator';
+import {
+  CreateProductCategoryRequiredKeys,
+  CreateProductSpecificationRequiredKeys,
+} from '@/common/constant/dto';
+import { AddProductCategoriesItem } from '@/modules/product-category/dto/create-product-category.dto';
+import { AddProductSpecificationsItem } from '@/modules/product-specification/dto/create-product-specification.dto';
 
 export class UpdateProductDto extends OmitType(PartialType(CreateProductDto), [
   'categories',
   'specifications',
 ]) {
-  @IsConnectOrCreateItems(CREATE_PRODUCT_CATEGORY_REQUIRED_KEYS)
+  @IsConnectOrCreateItems(CreateProductCategoryRequiredKeys)
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => AddProductCategoriesItem)
   addCategories?: AddProductCategoriesItem[];
 
-  @IsConnectOrCreateItems(CREATE_PRODUCT_SPECIFICATION_REQUIRED_KEYS)
+  @IsConnectOrCreateItems(CreateProductSpecificationRequiredKeys)
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => AddProductSpecificationsItem)

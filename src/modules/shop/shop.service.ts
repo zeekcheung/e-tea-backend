@@ -1,31 +1,51 @@
+import { xprisma } from '@/common/prisma/client';
+import { transformIncludeKeys } from '@/utils/dto';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
+import { Prisma } from '@prisma/client';
 import { CreateShopData, CreateShopDto } from './dto/create-shop.dto';
+import { FindAllShopsDto } from './dto/find-all-shops.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
+import { FindOneShopDto } from './dto/find-one-shop.dto';
 
 @Injectable()
 export class ShopService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor() { }
 
   create(createShopDto: CreateShopDto) {
-    return this.prisma.shop.create({
+    return xprisma.shop.create({
       data: CreateShopData(createShopDto),
     });
   }
 
-  findAll() {
-    return this.prisma.shop.findMany();
+  findAll(findAllShopsDto: FindAllShopsDto = {}) {
+    const { keyword = '', include = [] } = findAllShopsDto;
+
+    // fuzzy search shops and include relationships
+    return xprisma.shop.findMany({
+      where: {
+        name: { contains: keyword },
+      },
+      include: transformIncludeKeys(include) as Prisma.ShopInclude,
+    });
   }
 
-  findOne(id: number) {
-    return this.prisma.shop.findUnique({ where: { id } });
+  findOne(id: number, findOneShopDto: FindOneShopDto = {}) {
+    const { keyword = '', include = [] } = findOneShopDto;
+
+    return xprisma.shop.findUnique({
+      where: {
+        id,
+        name: { contains: keyword },
+      },
+      include: transformIncludeKeys(include) as Prisma.ShopInclude,
+    });
   }
 
   update(id: number, updateShopDto: UpdateShopDto) {
-    return this.prisma.shop.update({ where: { id }, data: updateShopDto });
+    return xprisma.shop.update({ where: { id }, data: updateShopDto });
   }
 
   remove(id: number) {
-    return this.prisma.shop.delete({ where: { id } });
+    return xprisma.shop.delete({ where: { id } });
   }
 }

@@ -4,7 +4,7 @@ import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { VerifyProductOwnerGuard } from './verify-product-owner.guard';
 
-// TEST: 测试商品模块
+// TEST: test product module
 
 @Module({
   imports: [ProductCategoryModule],

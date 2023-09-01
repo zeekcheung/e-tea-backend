@@ -1,6 +1,6 @@
 import {
-  CREATE_PRODUCT_CATEGORY_REQUIRED_KEYS,
-  CREATE_PRODUCT_SPECIFICATION_REQUIRED_KEYS,
+  CreateProductCategoryRequiredKeys,
+  CreateProductSpecificationRequiredKeys,
 } from '@/common/constant/dto';
 import { IsConnectOrCreateItems } from '@/common/validators/IsConnectOrCreateItems.validator';
 import { AddProductCategoriesItem } from '@/modules/product-category/dto/create-product-category.dto';
@@ -58,13 +58,13 @@ export class CreateProductDto {
   @IsNotEmpty()
   shopId: Product['shopId'];
 
-  @IsConnectOrCreateItems(CREATE_PRODUCT_CATEGORY_REQUIRED_KEYS)
+  @IsConnectOrCreateItems(CreateProductCategoryRequiredKeys)
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => AddProductCategoriesItem)
   categories?: AddProductCategoriesItem[];
 
-  @IsConnectOrCreateItems(CREATE_PRODUCT_SPECIFICATION_REQUIRED_KEYS)
+  @IsConnectOrCreateItems(CreateProductSpecificationRequiredKeys)
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => AddProductSpecificationsItem)

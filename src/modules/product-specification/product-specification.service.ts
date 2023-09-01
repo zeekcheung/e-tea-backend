@@ -1,28 +1,52 @@
+import { xprisma } from '@/common/prisma/client';
+import { transformIncludeKeys } from '@/utils/dto';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
+import { Prisma } from '@prisma/client';
 import { CreateProductCategoryDto } from '../product-category/dto/create-product-category.dto';
 import { CreateProductSpecificationDto } from './dto/create-product-specification.dto';
+import { FindAllProductSpecificationsDto } from './dto/find-all-product-specifications.dto';
+import { FindOneProductSpecificationDto } from './dto/find-one-product-specification.dto';
 import { UpdateProductSpecificationDto } from './dto/update-product-specification.dto';
 
 @Injectable()
 export class ProductSpecificationService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor() { }
 
   create({ products, ...rest }: CreateProductSpecificationDto) {
-    return this.prisma.productSpecification.create({
+    return xprisma.productSpecification.create({
       data: {
         ...rest,
       },
     });
   }
 
-  findAll() {
-    return this.prisma.productSpecification.findMany();
+  findAll(
+    findAllProductSpecificationsDto: FindAllProductSpecificationsDto = {},
+  ) {
+    const { keyword = '', include = [] } = findAllProductSpecificationsDto;
+
+    //  fuzzy search product specification and include relationships
+    return xprisma.productSpecification.findMany({
+      where: {
+        name: { contains: keyword },
+      },
+      include: transformIncludeKeys(
+        include,
+      ) as Prisma.ProductSpecificationInclude,
+    });
   }
 
-  findOne(id: number) {
-    return this.prisma.productSpecification.findUnique({
-      where: { id },
+  findOne(
+    id: number,
+    findOneProductSpecificationDto: FindOneProductSpecificationDto = {},
+  ) {
+    const { keyword = '', include = [] } = findOneProductSpecificationDto;
+
+    return xprisma.productSpecification.findUnique({
+      where: { id, name: { contains: keyword } },
+      include: transformIncludeKeys(
+        include,
+      ) as Prisma.ProductSpecificationInclude,
     });
   }
 
@@ -30,7 +54,7 @@ export class ProductSpecificationService {
     id: number,
     { addProducts, removeProducts, ...rest }: UpdateProductSpecificationDto,
   ) {
-    const specification = this.prisma.productSpecification.update({
+    const specification = xprisma.productSpecification.update({
       where: { id },
       data: rest,
     });
@@ -42,7 +66,7 @@ export class ProductSpecificationService {
   }
 
   remove(id: number) {
-    return this.prisma.productSpecification.delete({
+    return xprisma.productSpecification.delete({
       where: { id },
     });
   }
@@ -51,7 +75,7 @@ export class ProductSpecificationService {
     id: number,
     products: CreateProductCategoryDto['products'],
   ) {
-    return this.prisma.productCategory.update({
+    return xprisma.productCategory.update({
       where: { id },
       data: {
         products: {
@@ -75,7 +99,7 @@ export class ProductSpecificationService {
     id: number,
     products: UpdateProductSpecificationDto['removeProducts'],
   ) {
-    return this.prisma.productSpecification.update({
+    return xprisma.productSpecification.update({
       where: { id },
       data: {
         products: {

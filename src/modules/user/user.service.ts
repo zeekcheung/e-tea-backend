@@ -1,36 +1,55 @@
+import { xprisma } from '@/common/prisma/client';
+import { transformIncludeKeys } from '@/utils/dto';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'nestjs-prisma';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FindAllUsersDto } from './dto/find-all-users.dto';
+import { FindOneUserDto } from './dto/find-one-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 export const roundsOfHashing = 10;
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor() { }
 
   async create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({ data: createUserDto });
+    return xprisma.user.create({ data: createUserDto });
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
+  findAll(findAllUserDto?: FindAllUsersDto) {
+    const { keyword = '', include = [] } = findAllUserDto;
+
+    // fuzzy search users and include relationships
+    return xprisma.user.findMany({
+      where: {
+        nickname: { contains: keyword },
+      },
+      include: transformIncludeKeys(include) as Prisma.UserInclude,
+    });
   }
 
-  findUnique(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+  findUnique(id: number, findOneUserDot?: FindOneUserDto) {
+    const { keyword = '', include = [] } = findOneUserDot;
+    // fuzzy search user and include relationships
+    return xprisma.user.findUnique({
+      where: {
+        id,
+        nickname: { contains: keyword },
+      },
+      include: transformIncludeKeys(include) as Prisma.UserInclude,
+    });
   }
 
   findFirst(where: Prisma.UserWhereInput) {
-    return this.prisma.user.findFirst({ where });
+    return xprisma.user.findFirst({ where });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({ where: { id }, data: updateUserDto });
+    return xprisma.user.update({ where: { id }, data: updateUserDto });
   }
 
   remove(id: number) {
-    return this.prisma.user.delete({ where: { id } });
+    return xprisma.user.delete({ where: { id } });
   }
 }

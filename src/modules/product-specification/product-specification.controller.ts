@@ -1,5 +1,4 @@
 import { Auth, Public } from '@/common/decorators/auth.decorators';
-import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
 import { Role } from '@/types/model';
 import {
   Body,
@@ -11,15 +10,15 @@ import {
   Patch,
   Post,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { CreateProductSpecificationDto } from './dto/create-product-specification.dto';
+import { FindAllProductSpecificationsDto } from './dto/find-all-product-specifications.dto';
+import { FindOneProductSpecificationDto } from './dto/find-one-product-specification.dto';
 import { UpdateProductSpecificationDto } from './dto/update-product-specification.dto';
 import { ProductSpecificationService } from './product-specification.service';
 import { VerifyProductSpecificationGuard } from './verify-product-specification.guard';
 
 @Controller('product-specification')
-@UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class ProductSpecificationController {
   constructor(
     private readonly productSpecificationService: ProductSpecificationService,
@@ -35,15 +34,24 @@ export class ProductSpecificationController {
 
   @Get()
   @Public()
-  findAll() {
-    // TODO: 模糊查询商品规格
-    return this.productSpecificationService.findAll();
+  findAll(
+    @Body() findAllProductSpecificationsDto: FindAllProductSpecificationsDto,
+  ) {
+    return this.productSpecificationService.findAll(
+      findAllProductSpecificationsDto,
+    );
   }
 
   @Get(':id')
   @Public()
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.productSpecificationService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() findOneProductSpecificationDto: FindOneProductSpecificationDto,
+  ) {
+    return this.productSpecificationService.findOne(
+      id,
+      findOneProductSpecificationDto,
+    );
   }
 
   @Patch(':id')

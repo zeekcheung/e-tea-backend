@@ -43,3 +43,12 @@ export function pickKeysFromObject<T, K extends keyof T>(
   });
   return result;
 }
+
+/**
+ * Removes duplicate values from an array.
+ * @param array - The array to remove duplicates from.
+ * @return - An array without duplicate values.
+ */
+export function uniqueArray<T>(array: T[]): T[] {
+  return Array.from(new Set(array));
+}

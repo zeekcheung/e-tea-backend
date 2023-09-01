@@ -1,5 +1,4 @@
 import { Auth, Public } from '@/common/decorators/auth.decorators';
-import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
 import { Role } from '@/types/model';
 import {
   Body,
@@ -10,16 +9,18 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
+import { FindAllProductsDto } from './dto/find-all-products.dto';
+import { FindOneProductDto } from './dto/find-one-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
+import { VerifyProductOwnerGuard } from './verify-product-owner.guard';
 
 @Controller('product')
-@UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductService) { }
 
   @Post()
   @Auth(Role.SHOPKEEPER)
@@ -29,20 +30,21 @@ export class ProductController {
 
   @Get()
   @Public()
-  findAll() {
-    // TODO: 模糊查询商品
-    return this.productService.findAll();
+  findAll(@Body() findAllProductsDto: FindAllProductsDto) {
+    return this.productService.findAll(findAllProductsDto);
   }
 
   @Get(':id')
   @Public()
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.productService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() findOneProductDto: FindOneProductDto,
+  ) {
+    return this.productService.findOne(id, findOneProductDto);
   }
 
   @Patch(':id')
   @Auth(Role.SHOPKEEPER)
-  // WARNING: @UseGuards(VerifyProductOwnerGuard) is not working
   // @UseGuards(VerifyProductOwnerGuard)
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -53,7 +55,6 @@ export class ProductController {
 
   @Delete(':id')
   @Auth(Role.SHOPKEEPER)
-  // WARNING: @UseGuards(VerifyProductOwnerGuard) is not working
   // @UseGuards(VerifyProductOwnerGuard)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.remove(id);

@@ -1,3 +1,4 @@
+// TODO: use binary data to store the role
 /** 用户角色 */
 export enum Role {
   /** 顾客角色 */

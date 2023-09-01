@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ErrorCodesStatusMapping } from 'nestjs-prisma';
+import type { PrismaErrorCodeMappings } from '@/types/prisma/client';
 
 const {
   BAD_REQUEST,
@@ -12,7 +12,7 @@ const {
 /**
  * [Prisma Error Code](https://www.prisma.io/docs/reference/api-reference/error-reference#common): HTTP Status ResponseCode: HTTP Status Response
  */
-export const ERROR_CODES_MAPPING: ErrorCodesStatusMapping = {
+export const PrismaErrorCodeMappping: PrismaErrorCodeMappings = {
   P2000: BAD_REQUEST,
   // P2001: NOT_FOUND,
   P2002: CONFLICT,
@@ -38,7 +38,7 @@ export const ERROR_CODES_MAPPING: ErrorCodesStatusMapping = {
   P2022: INTERNAL_SERVER_ERROR,
   P2023: INTERNAL_SERVER_ERROR,
   P2024: SERVICE_UNAVAILABLE,
-  // P2025: INTERNAL_SERVER_ERROR,
+  P2025: BAD_REQUEST,
   P2026: NOT_IMPLEMENTED,
   P2027: INTERNAL_SERVER_ERROR,
   P2028: INTERNAL_SERVER_ERROR,

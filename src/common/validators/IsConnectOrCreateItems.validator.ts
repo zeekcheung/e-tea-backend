@@ -1,3 +1,4 @@
+import type { ClassType } from '@/types/base';
 import { BadRequestException } from '@nestjs/common';
 import {
   arrayNotEmpty,
@@ -8,8 +9,6 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-
-export type ClassType = new (...args: any[]) => any;
 
 @ValidatorConstraint({ name: 'IsUnionArray', async: false })
 export class IsConnectOrCreateItemsValidator
@@ -25,7 +24,7 @@ export class IsConnectOrCreateItemsValidator
     }
     const createRequiredKeys = args.constraints[0];
     value.forEach((item, i) => {
-      // 当 id 不存在时, item 是否包含所有必须字段
+      // whether the item has all the required keys when id is not exist
       if (!item.id) {
         createRequiredKeys.forEach((key: string) => {
           if (item[key] === undefined) {

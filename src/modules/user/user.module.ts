@@ -3,7 +3,7 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { VerifyUserGuard } from './verify-user.guard';
 
-// TEST: 测试用户模块
+// TEST: test user module
 
 @Module({
   controllers: [UserController],

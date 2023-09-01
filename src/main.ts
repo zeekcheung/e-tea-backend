@@ -1,8 +1,6 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { readFileSync } from 'fs';
-import { PrismaClientExceptionFilter } from 'nestjs-prisma';
-
 import {
   API_GLOBAL_PREFIX,
   HTTPS_ENABLE,
@@ -10,14 +8,14 @@ import {
   SSL_CERT,
   SSL_KEY,
 } from './common/constant/config';
-import { ERROR_CODES_MAPPING } from './common/exceptions/prisma-exceptions';
 import { AllowPrivateNetworkMiddleware } from './common/middlewares/allow-private-network.middleware';
 import { LoggingHttpMiddleware } from './common/middlewares/logging-http.middleware';
 import { AppModule } from './modules/app/app.module';
 import { getConfiguration } from './utils/config';
+import { PrismaExceptionFilter } from './common/exceptions/prisma-exception.filter';
 
 async function bootstrap() {
-  // 读取配置
+  // get configuration
   const getConfigByKeys = getConfiguration();
   const config = getConfigByKeys(
     API_GLOBAL_PREFIX,
@@ -52,19 +50,17 @@ async function bootstrap() {
   // use ClassSerializerInterceptor to serialize the response
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  // apply the exception filter to the entire application
+  // use exception filter to handle application errors
   const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(
-    new PrismaClientExceptionFilter(httpAdapter, ERROR_CODES_MAPPING),
-  );
+  app.useGlobalFilters(new PrismaExceptionFilter(httpAdapter));
 
-  // 注册全局中间件
+  // use middlewares
   app.use(LoggingHttpMiddleware, AllowPrivateNetworkMiddleware);
 
-  // 设置全局路由前缀
+  // set global prefix
   app.setGlobalPrefix(apiGlobalPrefix);
 
-  // 开启 CORS
+  // enable cors
   app.enableCors({
     origin: true,
     credentials: true,

@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
+import { xprisma } from '@/common/prisma/client';
+import { transformIncludeKeys } from '@/utils/dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { ProductCategoryService } from '../product-category/product-category.service';
-
 import { CreateProductDto } from './dto/create-product.dto';
+import { FindAllProductsDto } from './dto/find-all-products.dto';
+import { FindOneProductDto } from './dto/find-one-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly productCategoryService: ProductCategoryService,
-  ) {}
+  ) { }
 
   async create({
     shopId,
@@ -18,8 +20,7 @@ export class ProductService {
     specifications = [],
     ...rest
   }: CreateProductDto) {
-    // 创建实体
-    const product = await this.prisma.product.create({
+    const product = await xprisma.product.create({
       data: {
         ...rest,
         shop: {
@@ -28,21 +29,29 @@ export class ProductService {
       },
     });
 
-    // 建立关联
     await this.connectOrCreateProductCategories(product.id, categories);
     await this.connectOrCreateProductSpecifications(product.id, specifications);
 
     return product;
   }
 
-  findAll() {
-    return this.prisma.product.findMany();
+  findAll(findAllProductsDto: FindAllProductsDto = {}) {
+    const { keyword = '', include = [] } = findAllProductsDto;
+
+    return xprisma.product.findMany({
+      where: {
+        name: { contains: keyword },
+      },
+      include: transformIncludeKeys(include) as Prisma.ProductInclude,
+    });
   }
 
-  findOne(id: number) {
-    return this.prisma.product.findUnique({
-      where: { id },
-      include: { shop: true },
+  findOne(id: number, findOneProductDto: FindOneProductDto = {}) {
+    const { keyword = '', include = [] } = findOneProductDto;
+
+    return xprisma.product.findUnique({
+      where: { id, name: { contains: keyword } },
+      include: transformIncludeKeys(include) as Prisma.ProductInclude,
     });
   }
 
@@ -57,41 +66,44 @@ export class ProductService {
       ...rest
     }: UpdateProductDto,
   ) {
-    await this.prisma.product.update({
+    const product = await xprisma.product.update({
       where: { id },
-      // 更新实体
       data: rest,
     });
 
-    // 建立关联
     await this.connectOrCreateProductCategories(id, addCategories);
     await this.connectOrCreateProductSpecifications(id, addSpecifications);
-    // 断开关联
+
     await this.disconnectProductCategories(id, removeCategories);
-    const res = await this.disconnectProductSpecifications(
-      id,
-      removeSpecifications,
-    );
-    return res;
+    await this.disconnectProductSpecifications(id, removeSpecifications);
+
+    return product;
   }
 
   remove(id: number) {
-    return this.prisma.product.delete({ where: { id } });
+    return xprisma.product.delete({ where: { id } });
   }
 
   async connectOrCreateProductCategories(
     id: number,
     categories: CreateProductDto['categories'],
   ) {
+    if (categories.length === 0) {
+      return;
+    }
+
     const product = await this.findOne(id);
+    if (!product) {
+      throw new NotFoundException(`product id:${id} not found`);
+    }
+
     const shopId = product.shopId;
 
-    // 获取当前分类最大的 order
-    const maxCategoryOrder = await this.productCategoryService.getMaxOrder(
+    let maxCategoryOrder = await this.productCategoryService.getMaxOrder(
       shopId,
     );
 
-    return this.prisma.product.update({
+    return xprisma.product.update({
       where: { id },
       data: {
         categories: {
@@ -100,7 +112,7 @@ export class ProductService {
               where: { id: id ?? -1 },
               create: {
                 ...rest,
-                order: maxCategoryOrder,
+                order: ++maxCategoryOrder,
                 shop: {
                   connect: { id: shopId },
                 },
@@ -116,7 +128,11 @@ export class ProductService {
     id: number,
     specifications: CreateProductDto['specifications'],
   ) {
-    return this.prisma.product.update({
+    if (specifications.length === 0) {
+      return;
+    }
+
+    return xprisma.product.update({
       where: { id },
       data: {
         specifications: {
@@ -137,7 +153,10 @@ export class ProductService {
     id: number,
     categories: UpdateProductDto['removeCategories'],
   ) {
-    return this.prisma.product.update({
+    if (categories.length === 0) {
+      return;
+    }
+    return xprisma.product.update({
       where: { id },
       data: {
         categories: {
@@ -151,7 +170,11 @@ export class ProductService {
     id: number,
     specifications: UpdateProductDto['removeSpecifications'],
   ) {
-    return this.prisma.product.update({
+    if (specifications.length === 0) {
+      return;
+    }
+
+    return xprisma.product.update({
       where: { id },
       data: {
         specifications: {

@@ -1,7 +1,8 @@
+import { Public } from '@/common/decorators/auth.decorators';
+import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
+import { xprisma } from '@/common/prisma/client';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
-import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
-import { Public } from '@/common/decorators/auth.decorators';
 
 @Controller()
 @UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
@@ -17,6 +18,6 @@ export class AppController {
   @Public()
   @Get('test')
   getTest(): any {
-    return 'This is a test case.';
+    return xprisma.product.findMany();
   }
 }

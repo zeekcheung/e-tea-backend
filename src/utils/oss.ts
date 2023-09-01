@@ -1,10 +1,10 @@
 import crypto from 'crypto-js';
-import {
+import type {
   IOssHelper,
-  IOssOptions,
-  IUploadParams,
+  OssOptions,
   Policy,
   Signature,
+  UploadParams,
 } from '../types/oss';
 
 export default class MpUploadOssHelper implements IOssHelper {
@@ -13,14 +13,14 @@ export default class MpUploadOssHelper implements IOssHelper {
   timeout: number;
   maxSize: number;
 
-  constructor(options: IOssOptions) {
+  constructor(options: OssOptions) {
     this.accessKeyId = options.accessKeyId;
     this.accessKeySecret = options.accessKeySecret;
     this.timeout = options.timeout || 1;
     this.maxSize = options.maxSize || 1024 * 1024;
   }
 
-  createUploadParams(): IUploadParams {
+  createUploadParams(): UploadParams {
     const policy = this.getPolicyBase64();
     const signature = this.getSignature(policy);
 
@@ -33,13 +33,13 @@ export default class MpUploadOssHelper implements IOssHelper {
 
   getPolicyBase64(): Policy {
     const date = new Date();
-    // 设置 policy 过期时间
+    // set policy expiration
     date.setHours(date.getHours() + this.timeout);
     const srcT = date.toISOString();
     const policyText = {
       expiration: srcT,
       conditions: [
-        // 限制上传文件大小
+        // limit file size
         ['content-length-range', 0, this.maxSize * 1024 * 1024],
       ],
     };

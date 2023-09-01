@@ -1,7 +1,7 @@
-import { NextFunction, Response } from 'express';
+import type { NextFunction, Response } from 'express';
 
 /**
- * 在所有响应中添加 'Access-Control-Allow-Private-Network' 字段，以允许从公网访问服务器
+ * Add `Access-Control-Allow-Private-Network` field to all responses to allow private network access
  */
 export function AllowPrivateNetworkMiddleware(
   _req: Request,

@@ -1,11 +1,11 @@
 import { omitKeysFromObject } from '@/utils/base';
 import {
-  CallHandler,
-  ExecutionContext,
+  type CallHandler,
+  type ExecutionContext,
   Injectable,
-  NestInterceptor,
+  type NestInterceptor,
 } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { Observable, tap } from 'rxjs';
 
 @Injectable()
@@ -18,12 +18,13 @@ class FilterInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       tap((data) => {
-        // 记录转换后的 response
+        // save transformed response to the context
         const res = context.switchToHttp().getResponse<Response>();
         res.locals.transformedResponse = omitKeysFromObject(
           data,
           this.targetKeys,
         );
+        // LoggingHttpMiddleware will retrieve the transformed response
       }),
     );
   }

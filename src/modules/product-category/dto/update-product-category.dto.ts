@@ -12,7 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateProductCategoryDto } from './create-product-category.dto';
-import { CREATE_PRODUCT_REQUIRED_KEYS } from '@/common/constant/dto';
+import { CreateProductRequiredKeys } from '@/common/constant/dto';
 
 export class UpdateProductCategoryDto extends PartialType(
   OmitType(CreateProductCategoryDto, ['shopId', 'products']),
@@ -22,7 +22,7 @@ export class UpdateProductCategoryDto extends PartialType(
   @IsOptional()
   order?: number;
 
-  @IsConnectOrCreateItems(CREATE_PRODUCT_REQUIRED_KEYS)
+  @IsConnectOrCreateItems(CreateProductRequiredKeys)
   @ValidateNested({ each: true })
   @Type(() => AddProductsItem)
   @IsOptional()

@@ -14,7 +14,7 @@ export class VerifyUserGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    // TEST: 验证用户是否账户本人
+    // TEST: test user guard
     const request = context.switchToHttp().getRequest<Request>();
     const params = request.params;
     const userId = +params.id;

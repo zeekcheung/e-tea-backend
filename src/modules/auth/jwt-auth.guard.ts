@@ -32,12 +32,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext) {
-    // 是否开启 JWT 校验
+    // whether jwt enable
     if (!this.configService.get(JWT_ENABLE)) {
       return true;
     }
     const targets = [context.getHandler(), context.getClass()];
-    // 所有用户都可以访问
+    // all users can access
     const isPublic = this.reflector.getAllAndOverride<boolean>(
       IS_PUBLIC_KEY,
       targets,
@@ -45,7 +45,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (isPublic) {
       return true;
     }
-    // 只有登录用户才可以访问
+    // only authenticated users can access
     const isProtected = this.reflector.getAllAndOverride<boolean>(
       IS_PROTECTED_KEY,
       targets,
@@ -54,7 +54,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (isProtected) {
       roles = Object.values(Role) as Role[];
     }
-    // 从请求头中获取 token
+    // extract jwt from request
     const extractJwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
     const request = context.switchToHttp().getRequest<Request>();
     const token = extractJwtFromRequest(request);
@@ -66,18 +66,18 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       const payload = this.jwtService.verify<IAccessTokenPayload>(token, {
         secret,
       });
-      // 判断用户是否存在
-      const user = await this.userService.findUnique(payload.userId);
+      // whether user exists
+      const user = await this.userService.findUnique({ id: payload.userId });
       if (!user) {
         throw new NotFoundException(`No user found for id: ${payload.userId}`);
       }
-      // 判断用户是否具有权限
+      // whether user is authorized
       if (!roles.includes(user.role)) {
         throw new UnauthorizedException(
           `User ${user.id} is not authorized to access this resource`,
         );
       }
-      // 绑定用户信息到请求上下文
+      // add user to request context
       request.user = user;
       return true;
     } catch (error) {

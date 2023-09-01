@@ -7,7 +7,7 @@ export class RefreshAccessTokenService implements OnModuleInit {
   constructor(private readonly wxService: WxService) { }
 
   /**
-   * 定时刷新小程序的 access_token
+   * refresh access_token when it expires
    */
   async onModuleInit() {
     if (__DEV__) {
@@ -21,7 +21,7 @@ export class RefreshAccessTokenService implements OnModuleInit {
   }
 
   /**
-   * 刷新小程序的 access_token
+   * refresh access_token
    */
   private async refreshAccessToken() {
     const token = await this.wxService.requestAccessToken();

@@ -11,7 +11,7 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
-import { CREATE_PRODUCT_REQUIRED_KEYS } from '@/common/constant/dto';
+import { CreateProductRequiredKeys } from '@/common/constant/dto';
 
 export class CreateProductCategoryDto {
   @IsString()
@@ -28,7 +28,7 @@ export class CreateProductCategoryDto {
   @IsNotEmpty()
   shopId: ProductCategory['shopId'];
 
-  @IsConnectOrCreateItems(CREATE_PRODUCT_REQUIRED_KEYS)
+  @IsConnectOrCreateItems(CreateProductRequiredKeys)
   @ValidateNested({ each: true })
   @Type(() => AddProductsItem)
   @IsOptional()

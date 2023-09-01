@@ -4,7 +4,7 @@ import {
   OSS_MAX_SIZE,
   OSS_TIMEOUT,
 } from '@/common/constant/config';
-import { IUploadParams } from '@/types/oss';
+import type { UploadParams } from '@/types/oss';
 import MpUploadOssHelper from '@/utils/oss';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -22,7 +22,7 @@ export class OssService {
     });
   }
 
-  createUploadParams(): IUploadParams {
+  createUploadParams(): UploadParams {
     return this.ossHelper.createUploadParams();
   }
 }

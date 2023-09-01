@@ -1,4 +1,4 @@
-import { Prisma, Shop } from '@prisma/client';
+import type { Prisma, Shop } from '@prisma/client';
 import {
   IsInt,
   IsNotEmpty,

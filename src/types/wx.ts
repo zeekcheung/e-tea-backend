@@ -1,25 +1,25 @@
-export interface IWxAppInfo {
+export interface WxAppInfo {
   /** 小程序 appId */
   appId: string;
   /** 小程序 appSecret */
   appSecret: string;
 }
 
-export type IWxGetAccessTokenParams = IWxAppInfo;
+export type WxGetAccessTokenParams = WxAppInfo;
 
-export interface IWxGetAccessTokenResponseBoxy {
+export interface WxGetAccessTokenResponseBoxy {
   /** 接口调用凭证，该参数为 URL 参数，非 Body 参数。使用access_token或者authorizer_access_token */
   access_token: string;
   /** 凭证有效时间，单位：秒。目前是 7200 秒之内的值 */
   expires_in: number;
 }
 
-export interface IWxLoginParams {
+export interface WxLoginParams {
   /** 登录时获取的 code */
   code: string;
 }
 
-export interface IWxLoginResponseBoxy {
+export interface WxLoginResponseBoxy {
   /** 用户唯一标识 */
   openid: string;
   /** 会话密钥 */
@@ -32,14 +32,14 @@ export interface IWxLoginResponseBoxy {
   errmsg: string;
 }
 
-export interface IWxGetPhoneNumberParams {
+export interface WxGetPhoneNumberParams {
   /** 小程序接口授权凭证 */
   accessToken: string;
   /** 手机号获取凭证 */
   code: string;
 }
 
-export interface IWxGetPhoneNumberResponseBoxy {
+export interface WxGetPhoneNumberResponseBoxy {
   /** 错误码 */
   errcode: -1 | 40029;
   /** 错误信息 */

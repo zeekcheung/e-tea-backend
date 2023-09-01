@@ -11,7 +11,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { CREATE_PRODUCT_REQUIRED_KEYS } from '@/common/constant/dto';
+import { CreateProductRequiredKeys } from '@/common/constant/dto';
 
 export class CreateProductSpecificationDto {
   @IsString()
@@ -26,7 +26,7 @@ export class CreateProductSpecificationDto {
   @IsNotEmpty()
   price: ProductSpecification['price'];
 
-  @IsConnectOrCreateItems(CREATE_PRODUCT_REQUIRED_KEYS)
+  @IsConnectOrCreateItems(CreateProductRequiredKeys)
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => AddProductsItem)

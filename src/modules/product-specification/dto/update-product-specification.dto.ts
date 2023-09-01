@@ -11,12 +11,12 @@ import {
 } from 'class-validator';
 
 import { CreateProductSpecificationDto } from './create-product-specification.dto';
-import { CREATE_PRODUCT_REQUIRED_KEYS } from '@/common/constant/dto';
+import { CreateProductRequiredKeys } from '@/common/constant/dto';
 
 export class UpdateProductSpecificationDto extends PartialType(
   OmitType(CreateProductSpecificationDto, ['products']),
 ) {
-  @IsConnectOrCreateItems(CREATE_PRODUCT_REQUIRED_KEYS)
+  @IsConnectOrCreateItems(CreateProductRequiredKeys)
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => AddProductsItem)

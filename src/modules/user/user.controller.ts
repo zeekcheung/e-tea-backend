@@ -1,3 +1,4 @@
+import { Protected, Public } from '@/common/decorators/auth.decorators';
 import {
   Body,
   Controller,
@@ -8,17 +9,15 @@ import {
   Patch,
   Post,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { VerifyUserGuard } from './verify-user.guard';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FindAllUsersDto } from './dto/find-all-users.dto';
+import { FindOneUserDto } from './dto/find-one-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
-import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
-import { Protected, Public } from '@/common/decorators/auth.decorators';
+import { VerifyUserGuard } from './verify-user.guard';
 
 @Controller('user')
-@UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
@@ -30,15 +29,17 @@ export class UserController {
 
   @Get()
   @Protected()
-  async findAll() {
-    // TODO:模糊查询
-    return await this.userService.findAll();
+  async findAll(@Body() findAllUsersDto: FindAllUsersDto) {
+    return await this.userService.findAll(findAllUsersDto);
   }
 
   @Get(':id')
   @Protected()
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    return await this.userService.findUnique(id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() findOneUserDto: FindOneUserDto,
+  ) {
+    return await this.userService.findUnique(id, findOneUserDto);
   }
 
   @Patch(':id')

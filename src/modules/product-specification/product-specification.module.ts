@@ -3,7 +3,7 @@ import { ProductSpecificationController } from './product-specification.controll
 import { ProductSpecificationService } from './product-specification.service';
 import { VerifyProductSpecificationGuard } from './verify-product-specification.guard';
 
-// TEST: 测试商品规格模块
+// TEST: test product specification module
 
 @Module({
   controllers: [ProductSpecificationController],

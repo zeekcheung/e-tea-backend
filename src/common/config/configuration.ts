@@ -25,14 +25,14 @@ import {
 import { ENV_FILE_PATH } from '../constant/env';
 
 export default function configuration() {
-  // 加载 .env 中的环境变量
+  // load configuration from environment
   config({
     path: ENV_FILE_PATH,
   });
 
   const env = process.env;
 
-  // 初始化所有环境变量
+  // initialize configuration
   return {
     [PORT]: parseInt(env[PORT], 10) || 3000,
     [API_GLOBAL_PREFIX]: env[API_GLOBAL_PREFIX] || '',

@@ -1,5 +1,4 @@
 import { Auth, Public } from '@/common/decorators/auth.decorators';
-import { FilterKeysInterceptor } from '@/common/interceptors/filter-keys.interceptor';
 import { Role } from '@/types/model';
 import {
   Body,
@@ -11,15 +10,15 @@ import {
   Patch,
   Post,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { CreateShopDto } from './dto/create-shop.dto';
+import { FindAllShopsDto } from './dto/find-all-shops.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { ShopService } from './shop.service';
 import { VerifyShopkeeperGuard } from './verify-shopkeeper.guard';
+import { FindOneShopDto } from './dto/find-one-shop.dto';
 
 @Controller('shop')
-@UseInterceptors(FilterKeysInterceptor('password', 'deletedAt'))
 export class ShopController {
   constructor(private readonly shopService: ShopService) { }
 
@@ -31,15 +30,17 @@ export class ShopController {
 
   @Get()
   @Public()
-  findAll() {
-    // TODO: 模糊查询店铺
-    return this.shopService.findAll();
+  findAll(@Body() findAllShopsDto: FindAllShopsDto) {
+    return this.shopService.findAll(findAllShopsDto);
   }
 
   @Get(':id')
   @Public()
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.shopService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() findOneShopDto: FindOneShopDto,
+  ) {
+    return this.shopService.findOne(id, findOneShopDto);
   }
 
   @Patch(':id')

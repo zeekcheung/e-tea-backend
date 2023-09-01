@@ -2,6 +2,12 @@ import { pickKeysFromObject } from './base';
 
 import configuration from '@/common/config/configuration';
 
+/**
+ * Get the function that Retrieves the configuration.
+ *
+ * `const getConfigByKeys = getConfiguration();`
+ * `const { foo, bar } = getConfigByKeys('foo', 'bar');`
+ */
 export function getConfiguration() {
   const config = configuration();
   type Config = typeof config;

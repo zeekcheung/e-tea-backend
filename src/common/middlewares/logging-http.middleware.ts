@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 /**
  * Middleware function for logging HTTP requests and responses.
