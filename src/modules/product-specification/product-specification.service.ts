@@ -24,17 +24,22 @@ export class ProductSpecificationService {
       throw new ConflictException('Product specification already exists');
     }
 
-    return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
-      const specification = await _tx.productSpecification.create({
-        data: {
-          ...rest,
-        },
+    try {
+      return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+        const specification = await _tx.productSpecification.create({
+          data: {
+            ...rest,
+          },
+        });
+
+        await this.connectOrCreateProducts(specification.id, products, _tx);
+
+        return specification;
       });
-
-      await this.connectOrCreateProducts(specification.id, products, _tx);
-
-      return specification;
-    });
+    } catch (error) {
+      console.log({ error });
+      throw new Prisma.PrismaClientKnownRequestError(error.message, error);
+    }
   }
 
   findAll(
@@ -74,18 +79,23 @@ export class ProductSpecificationService {
     { addProducts, removeProducts, ...rest }: UpdateProductSpecificationDto,
     tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
-    return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
-      const specification = await _tx.productSpecification.update({
-        where: { id },
-        data: rest,
+    try {
+      return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+        const specification = await _tx.productSpecification.update({
+          where: { id },
+          data: rest,
+        });
+
+        await this.connectOrCreateProducts(id, addProducts, _tx);
+
+        await this.disconnectProducts(id, removeProducts, _tx);
+
+        return specification;
       });
-
-      await this.connectOrCreateProducts(id, addProducts, _tx);
-
-      await this.disconnectProducts(id, removeProducts, _tx);
-
-      return specification;
-    });
+    } catch (error) {
+      console.log(error);
+      throw new Prisma.PrismaClientKnownRequestError(error.message, error);
+    }
   }
 
   remove(

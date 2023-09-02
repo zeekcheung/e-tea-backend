@@ -8,7 +8,8 @@ import {
 
 /** prisma client instance without any extensions */
 export const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+  // log: ['query', 'info', 'warn', 'error'],
+  log: [],
   errorFormat: 'pretty',
 });
 

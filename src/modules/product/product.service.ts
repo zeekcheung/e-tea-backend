@@ -22,25 +22,34 @@ export class ProductService {
     { shopId, categories, specifications, ...rest }: CreateProductDto,
     tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
-    tx.$transaction(async (_tx: PrismaClientInTransaction) => {
-      const product = await _tx.product.create({
-        data: {
-          ...rest,
-          shop: {
-            connect: { id: shopId },
+    try {
+      await tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+        const product = await _tx.product.create({
+          data: {
+            ...rest,
+            shop: {
+              connect: { id: shopId },
+            },
           },
-        },
+        });
+
+        await this.connectOrCreateProductCategories(
+          product.id,
+          categories,
+          _tx,
+        );
+        await this.connectOrCreateProductSpecifications(
+          product.id,
+          specifications,
+          _tx,
+        );
+
+        return product;
       });
-
-      await this.connectOrCreateProductCategories(product.id, categories, _tx);
-      await this.connectOrCreateProductSpecifications(
-        product.id,
-        specifications,
-        _tx,
-      );
-
-      return product;
-    });
+    } catch (err) {
+      console.log({ err });
+      throw new Prisma.PrismaClientKnownRequestError(err.message, err);
+    }
   }
 
   findAll(
@@ -82,24 +91,33 @@ export class ProductService {
     }: UpdateProductDto,
     tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
-    return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
-      const product = await xprisma.product.update({
-        where: { id },
-        data: rest,
+    try {
+      return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+        const product = await xprisma.product.update({
+          where: { id },
+          data: rest,
+        });
+
+        await this.connectOrCreateProductCategories(id, addCategories, _tx);
+        await this.connectOrCreateProductSpecifications(
+          id,
+          addSpecifications,
+          _tx,
+        );
+
+        await this.disconnectProductCategories(id, removeCategories, _tx);
+        await this.disconnectProductSpecifications(
+          id,
+          removeSpecifications,
+          _tx,
+        );
+
+        return product;
       });
-
-      await this.connectOrCreateProductCategories(id, addCategories, _tx);
-      await this.connectOrCreateProductSpecifications(
-        id,
-        addSpecifications,
-        _tx,
-      );
-
-      await this.disconnectProductCategories(id, removeCategories, _tx);
-      await this.disconnectProductSpecifications(id, removeSpecifications, _tx);
-
-      return product;
-    });
+    } catch (error) {
+      console.log({ error });
+      throw new Prisma.PrismaClientKnownRequestError(error.message, error);
+    }
   }
 
   remove(

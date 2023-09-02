@@ -25,8 +25,6 @@ export class ArrayItemsExistValidator implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args?: ValidationArguments): string {
-    console.log(args);
-    console.log(args.constraints);
     throw new BadRequestException(
       `All items in \`${args.property}\` must exist in [${args.constraints[0]
         .map((key: string) => `'${key}'`)

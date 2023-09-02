@@ -25,24 +25,29 @@ export class ProductCategoryService {
       throw new ConflictException('Category already exists');
     }
 
-    tx.$transaction(async (_tx: PrismaClientInTransaction) => {
-      const maxOrder = await this.getMaxOrder(shopId, _tx);
+    try {
+      tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+        const maxOrder = await this.getMaxOrder(shopId, _tx);
 
-      const category = await _tx.productCategory.create({
-        data: {
-          name,
-          description,
-          order: maxOrder + 1,
-          shop: {
-            connect: { id: shopId },
+        const category = await _tx.productCategory.create({
+          data: {
+            name,
+            description,
+            order: maxOrder + 1,
+            shop: {
+              connect: { id: shopId },
+            },
           },
-        },
+        });
+
+        await this.connectOrCreateProducts(category.id, products, _tx);
+
+        return category;
       });
-
-      await this.connectOrCreateProducts(category.id, products, _tx);
-
-      return category;
-    });
+    } catch (error) {
+      console.log({ error });
+      throw new Prisma.PrismaClientKnownRequestError(error.message, error);
+    }
   }
 
   findAll(
@@ -78,18 +83,23 @@ export class ProductCategoryService {
     { addProducts, removeProducts, ...rest }: UpdateProductCategoryDto,
     tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
-    return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
-      const category = await _tx.productCategory.update({
-        where: { id },
-        data: rest,
+    try {
+      return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+        const category = await _tx.productCategory.update({
+          where: { id },
+          data: rest,
+        });
+
+        await this.connectOrCreateProducts(category.id, addProducts, _tx);
+
+        await this.disconnectProducts(category.id, removeProducts, _tx);
+
+        return category;
       });
-
-      await this.connectOrCreateProducts(category.id, addProducts, _tx);
-
-      await this.disconnectProducts(category.id, removeProducts, _tx);
-
-      return category;
-    });
+    } catch (error) {
+      console.log({ error });
+      throw new Prisma.PrismaClientKnownRequestError(error.message, error);
+    }
   }
 
   remove(
