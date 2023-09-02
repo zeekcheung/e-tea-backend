@@ -56,7 +56,7 @@ export class ProductSpecificationController {
 
   @Patch(':id')
   @Auth(Role.SHOPKEEPER)
-  @UseGuards(VerifyProductSpecificationGuard)
+  // @UseGuards(VerifyProductSpecificationGuard)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProductSpecificationDto: UpdateProductSpecificationDto,
@@ -69,7 +69,7 @@ export class ProductSpecificationController {
 
   @Delete(':id')
   @Auth(Role.SHOPKEEPER)
-  @UseGuards(VerifyProductSpecificationGuard)
+  // @UseGuards(VerifyProductSpecificationGuard)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productSpecificationService.remove(id);
   }

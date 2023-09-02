@@ -1,4 +1,8 @@
 import { xprisma } from '@/common/prisma/client';
+import {
+  PrismaClientInTransaction,
+  PrismaClientWithExtensions,
+} from '@/types/prisma/client';
 import { transformIncludeKeys } from '@/utils/dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -14,31 +18,38 @@ export class ProductService {
     private readonly productCategoryService: ProductCategoryService,
   ) { }
 
-  async create({
-    shopId,
-    categories,
-    specifications,
-    ...rest
-  }: CreateProductDto) {
-    const product = await xprisma.product.create({
-      data: {
-        ...rest,
-        shop: {
-          connect: { id: shopId },
+  async create(
+    { shopId, categories, specifications, ...rest }: CreateProductDto,
+    tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
+  ) {
+    tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+      const product = await _tx.product.create({
+        data: {
+          ...rest,
+          shop: {
+            connect: { id: shopId },
+          },
         },
-      },
+      });
+
+      await this.connectOrCreateProductCategories(product.id, categories, _tx);
+      await this.connectOrCreateProductSpecifications(
+        product.id,
+        specifications,
+        _tx,
+      );
+
+      return product;
     });
-
-    await this.connectOrCreateProductCategories(product.id, categories);
-    await this.connectOrCreateProductSpecifications(product.id, specifications);
-
-    return product;
   }
 
-  findAll(findAllProductsDto: FindAllProductsDto = {}) {
+  findAll(
+    findAllProductsDto: FindAllProductsDto = {},
+    tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
+  ) {
     const { keyword = '', include = [] } = findAllProductsDto;
 
-    return xprisma.product.findMany({
+    return tx.product.findMany({
       where: {
         name: { contains: keyword },
       },
@@ -46,10 +57,14 @@ export class ProductService {
     });
   }
 
-  findOne(id: number, findOneProductDto: FindOneProductDto = {}) {
+  findOne(
+    id: number,
+    findOneProductDto: FindOneProductDto = {},
+    tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
+  ) {
     const { keyword = '', include = [] } = findOneProductDto;
 
-    return xprisma.product.findUnique({
+    return tx.product.findUnique({
       where: { id, name: { contains: keyword } },
       include: transformIncludeKeys(include) as Prisma.ProductInclude,
     });
@@ -65,34 +80,45 @@ export class ProductService {
       removeSpecifications,
       ...rest
     }: UpdateProductDto,
+    tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
-    const product = await xprisma.product.update({
-      where: { id },
-      data: rest,
+    return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+      const product = await xprisma.product.update({
+        where: { id },
+        data: rest,
+      });
+
+      await this.connectOrCreateProductCategories(id, addCategories, _tx);
+      await this.connectOrCreateProductSpecifications(
+        id,
+        addSpecifications,
+        _tx,
+      );
+
+      await this.disconnectProductCategories(id, removeCategories, _tx);
+      await this.disconnectProductSpecifications(id, removeSpecifications, _tx);
+
+      return product;
     });
-
-    await this.connectOrCreateProductCategories(id, addCategories);
-    await this.connectOrCreateProductSpecifications(id, addSpecifications);
-
-    await this.disconnectProductCategories(id, removeCategories);
-    await this.disconnectProductSpecifications(id, removeSpecifications);
-
-    return product;
   }
 
-  remove(id: number) {
-    return xprisma.product.delete({ where: { id } });
+  remove(
+    id: number,
+    tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
+  ) {
+    return tx.product.delete({ where: { id } });
   }
 
   async connectOrCreateProductCategories(
     id: number,
     categories: CreateProductDto['categories'] = [],
+    tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
     if (categories.length === 0) {
       return;
     }
 
-    const product = await this.findOne(id);
+    const product = await this.findOne(id, {}, tx);
     if (!product) {
       throw new NotFoundException(`product id:${id} not found`);
     }
@@ -101,9 +127,10 @@ export class ProductService {
 
     let maxCategoryOrder = await this.productCategoryService.getMaxOrder(
       shopId,
+      tx,
     );
 
-    return xprisma.product.update({
+    return tx.product.update({
       where: { id },
       data: {
         categories: {
@@ -127,12 +154,13 @@ export class ProductService {
   connectOrCreateProductSpecifications(
     id: number,
     specifications: CreateProductDto['specifications'] = [],
+    tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
     if (specifications.length === 0) {
       return;
     }
 
-    return xprisma.product.update({
+    return tx.product.update({
       where: { id },
       data: {
         specifications: {
@@ -152,12 +180,13 @@ export class ProductService {
   disconnectProductCategories(
     id: number,
     categories: UpdateProductDto['removeCategories'] = [],
+    tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
     if (categories.length === 0) {
       return;
     }
 
-    return xprisma.product.update({
+    return tx.product.update({
       where: { id },
       data: {
         categories: {
@@ -170,12 +199,13 @@ export class ProductService {
   disconnectProductSpecifications(
     id: number,
     specifications: UpdateProductDto['removeSpecifications'] = [],
+    tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
     if (specifications.length === 0) {
       return;
     }
 
-    return xprisma.product.update({
+    return tx.product.update({
       where: { id },
       data: {
         specifications: {

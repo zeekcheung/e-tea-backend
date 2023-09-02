@@ -3,6 +3,7 @@ import {
   CreateProductSpecificationRequiredKeys,
 } from '@/common/constant/dto';
 import { IsConnectOrCreateItems } from '@/common/validators/IsConnectOrCreateItems.validator';
+import { IsOptional } from '@/common/validators/IsOptional.validator';
 import { AddProductCategoriesItem } from '@/modules/product-category/dto/create-product-category.dto';
 import { AddProductSpecificationsItem } from '@/modules/product-specification/dto/create-product-specification.dto';
 import { OmitType } from '@nestjs/swagger';
@@ -13,7 +14,6 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
   IsUrl,
   MaxLength,
@@ -77,5 +77,5 @@ export class AddProductsItem extends OmitType(CreateProductDto, [
 ]) {
   @IsInt()
   @IsOptional()
-  id: Product['id'];
+  id?: Product['id'];
 }

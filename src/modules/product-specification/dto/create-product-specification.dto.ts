@@ -1,5 +1,7 @@
-import { AddProductsItem } from '@/modules/product/dto/create-product.dto';
+import { CreateProductRequiredKeys } from '@/common/constant/dto';
 import { IsConnectOrCreateItems } from '@/common/validators/IsConnectOrCreateItems.validator';
+import { IsOptional } from '@/common/validators/IsOptional.validator';
+import { AddProductsItem } from '@/modules/product/dto/create-product.dto';
 import { OmitType } from '@nestjs/swagger';
 import { ProductSpecification } from '@prisma/client';
 import { Type } from 'class-transformer';
@@ -7,11 +9,9 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { CreateProductRequiredKeys } from '@/common/constant/dto';
 
 export class CreateProductSpecificationDto {
   @IsString()
@@ -39,5 +39,5 @@ export class AddProductSpecificationsItem extends OmitType(
 ) {
   @IsInt()
   @IsOptional()
-  id: ProductSpecification['id'];
+  id?: ProductSpecification['id'];
 }

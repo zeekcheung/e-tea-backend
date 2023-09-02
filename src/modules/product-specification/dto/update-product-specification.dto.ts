@@ -1,25 +1,24 @@
-import { AddProductsItem } from '@/modules/product/dto/create-product.dto';
 import { IsConnectOrCreateItems } from '@/common/validators/IsConnectOrCreateItems.validator';
+import { AddProductsItem } from '@/modules/product/dto/create-product.dto';
 import { OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
   IsNumber,
-  IsOptional,
   ValidateNested,
 } from 'class-validator';
-
-import { CreateProductSpecificationDto } from './create-product-specification.dto';
 import { CreateProductRequiredKeys } from '@/common/constant/dto';
+import { CreateProductSpecificationDto } from './create-product-specification.dto';
+import { IsOptional } from '@/common/validators/IsOptional.validator';
 
 export class UpdateProductSpecificationDto extends PartialType(
   OmitType(CreateProductSpecificationDto, ['products']),
 ) {
   @IsConnectOrCreateItems(CreateProductRequiredKeys)
   @ValidateNested({ each: true })
-  @IsOptional()
   @Type(() => AddProductsItem)
+  @IsOptional()
   addProducts?: AddProductsItem[];
 
   @IsArray()

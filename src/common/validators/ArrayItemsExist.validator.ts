@@ -4,9 +4,11 @@ import {
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
+  ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
 
+@ValidatorConstraint({ name: 'ArrayItemsExist', async: false })
 export class ArrayItemsExistValidator implements ValidatorConstraintInterface {
   async validate(value: any[], args: ValidationArguments) {
     // @IsArray
@@ -23,12 +25,21 @@ export class ArrayItemsExistValidator implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args?: ValidationArguments): string {
+    console.log(args);
+    console.log(args.constraints);
     throw new BadRequestException(
-      `All items in \`${args.property}\` must exist in [${args.value}]`,
+      `All items in \`${args.property}\` must exist in [${args.constraints[0]
+        .map((key: string) => `'${key}'`)
+        .join(', ')}]`,
     );
   }
 }
 
+/**
+ * Check if all items in the array exists in the source array
+ * @param sourceArray
+ * @param validationOptions
+ */
 export function ArrayItemsExist(
   sourceArray: any[],
   validationOptions?: ValidationOptions,

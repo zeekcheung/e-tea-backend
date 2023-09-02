@@ -9,7 +9,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
-@ValidatorConstraint({ name: 'IsUnionArray', async: false })
+@ValidatorConstraint({ name: 'IsConnectOrCreateItems', async: false })
 export class IsConnectOrCreateItemsValidator
   implements ValidatorConstraintInterface {
   validate(value: any, args: ValidationArguments) {
@@ -37,17 +37,25 @@ export class IsConnectOrCreateItemsValidator
   }
 
   defaultMessage(args: ValidationArguments) {
-    return `Items in \`${args.property}\` must contains the required keys: [${args.constraints[0]}]`;
+    return `Items in \`${args.property
+      }\` must contains the required keys: [${args.constraints[0]
+        .map((key: string) => `'${key}'`)
+        .join(', ')}]`;
   }
 }
 
+/**
+ * Check if the items in the array has all the required keys when id is not exist
+ * @param createRequiredKeys the required keys to create model when id is not exist
+ * @param validationOptions
+ */
 export function IsConnectOrCreateItems<T>(
   createRequiredKeys: Array<keyof T>,
   validationOptions?: ValidationOptions,
 ) {
   return function(object: object, propertyName: string) {
     registerDecorator({
-      name: 'isUnionArray',
+      name: 'IsConnectOrCreateItems',
       target: object.constructor,
       propertyName: propertyName,
       constraints: [createRequiredKeys],

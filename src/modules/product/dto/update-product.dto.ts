@@ -4,18 +4,18 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsNumber,
-  IsOptional,
   ValidateNested,
 } from 'class-validator';
 
-import { CreateProductDto } from './create-product.dto';
-import { IsConnectOrCreateItems } from '@/common/validators/IsConnectOrCreateItems.validator';
 import {
   CreateProductCategoryRequiredKeys,
   CreateProductSpecificationRequiredKeys,
 } from '@/common/constant/dto';
+import { IsConnectOrCreateItems } from '@/common/validators/IsConnectOrCreateItems.validator';
 import { AddProductCategoriesItem } from '@/modules/product-category/dto/create-product-category.dto';
 import { AddProductSpecificationsItem } from '@/modules/product-specification/dto/create-product-specification.dto';
+import { CreateProductDto } from './create-product.dto';
+import { IsOptional } from '@/common/validators/IsOptional.validator';
 
 export class UpdateProductDto extends OmitType(PartialType(CreateProductDto), [
   'categories',
