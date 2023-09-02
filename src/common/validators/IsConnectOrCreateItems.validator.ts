@@ -1,4 +1,3 @@
-import type { ClassType } from '@/types/base';
 import { BadRequestException } from '@nestjs/common';
 import {
   arrayNotEmpty,
@@ -18,9 +17,8 @@ export class IsConnectOrCreateItemsValidator
     if (!isArray(value)) {
       return false;
     }
-    // @ArrayNotEmpty
     if (!arrayNotEmpty(value)) {
-      return false;
+      return true;
     }
     const createRequiredKeys = args.constraints[0];
     value.forEach((item, i) => {
@@ -39,9 +37,7 @@ export class IsConnectOrCreateItemsValidator
   }
 
   defaultMessage(args: ValidationArguments) {
-    return `${args.property} must be an array of [${args.constraints[0].map(
-      (c: ClassType) => c.name,
-    )}]`;
+    return `Items in \`${args.property}\` must contains the required keys: [${args.constraints[0]}]`;
   }
 }
 

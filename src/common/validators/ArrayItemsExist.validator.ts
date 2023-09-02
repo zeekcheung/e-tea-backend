@@ -24,7 +24,7 @@ export class ArrayItemsExistValidator implements ValidatorConstraintInterface {
 
   defaultMessage(args?: ValidationArguments): string {
     throw new BadRequestException(
-      `All items in ${args.property} must exist in ${args.value}`,
+      `All items in \`${args.property}\` must exist in [${args.value}]`,
     );
   }
 }

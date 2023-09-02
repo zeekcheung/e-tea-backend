@@ -67,7 +67,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         secret,
       });
       // whether user exists
-      const user = await this.userService.findUnique({ id: payload.userId });
+      const user = await this.userService.findUnique(payload.userId);
       if (!user) {
         throw new NotFoundException(`No user found for id: ${payload.userId}`);
       }

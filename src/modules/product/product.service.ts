@@ -16,8 +16,8 @@ export class ProductService {
 
   async create({
     shopId,
-    categories = [],
-    specifications = [],
+    categories,
+    specifications,
     ...rest
   }: CreateProductDto) {
     const product = await xprisma.product.create({
@@ -59,10 +59,10 @@ export class ProductService {
     id: number,
     {
       shopId,
-      addCategories = [],
-      addSpecifications = [],
-      removeCategories = [],
-      removeSpecifications = [],
+      addCategories,
+      addSpecifications,
+      removeCategories,
+      removeSpecifications,
       ...rest
     }: UpdateProductDto,
   ) {
@@ -86,7 +86,7 @@ export class ProductService {
 
   async connectOrCreateProductCategories(
     id: number,
-    categories: CreateProductDto['categories'],
+    categories: CreateProductDto['categories'] = [],
   ) {
     if (categories.length === 0) {
       return;
@@ -126,7 +126,7 @@ export class ProductService {
 
   connectOrCreateProductSpecifications(
     id: number,
-    specifications: CreateProductDto['specifications'],
+    specifications: CreateProductDto['specifications'] = [],
   ) {
     if (specifications.length === 0) {
       return;
@@ -138,7 +138,7 @@ export class ProductService {
         specifications: {
           connectOrCreate: specifications.map(({ id, ...rest }) => {
             return {
-              where: { id },
+              where: { id: id ?? -1 },
               create: {
                 ...rest,
               },
@@ -151,11 +151,12 @@ export class ProductService {
 
   disconnectProductCategories(
     id: number,
-    categories: UpdateProductDto['removeCategories'],
+    categories: UpdateProductDto['removeCategories'] = [],
   ) {
     if (categories.length === 0) {
       return;
     }
+
     return xprisma.product.update({
       where: { id },
       data: {
@@ -168,7 +169,7 @@ export class ProductService {
 
   disconnectProductSpecifications(
     id: number,
-    specifications: UpdateProductDto['removeSpecifications'],
+    specifications: UpdateProductDto['removeSpecifications'] = [],
   ) {
     if (specifications.length === 0) {
       return;

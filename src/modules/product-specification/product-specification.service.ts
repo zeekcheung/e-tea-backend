@@ -58,10 +58,11 @@ export class ProductSpecificationService {
       where: { id },
       data: rest,
     });
-    // 建立关联
+
     await this.connectOrCreateProducts(id, addProducts);
-    // 断开关联
+
     await this.disconnectProducts(id, removeProducts);
+
     return specification;
   }
 
@@ -73,15 +74,19 @@ export class ProductSpecificationService {
 
   async connectOrCreateProducts(
     id: number,
-    products: CreateProductCategoryDto['products'],
+    products: CreateProductCategoryDto['products'] = [],
   ) {
+    if (products.length === 0) {
+      return;
+    }
+
     return xprisma.productCategory.update({
       where: { id },
       data: {
         products: {
           connectOrCreate: products.map(({ id, shopId, ...rest }) => {
             return {
-              where: { id },
+              where: { id: id ?? -1 },
               create: {
                 ...rest,
                 shop: {
@@ -97,8 +102,12 @@ export class ProductSpecificationService {
 
   disconnectProducts(
     id: number,
-    products: UpdateProductSpecificationDto['removeProducts'],
+    products: UpdateProductSpecificationDto['removeProducts'] = [],
   ) {
+    if (products.length === 0) {
+      return;
+    }
+
     return xprisma.productSpecification.update({
       where: { id },
       data: {
