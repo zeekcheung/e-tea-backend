@@ -23,7 +23,7 @@ export class ProductService {
     tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
     try {
-      await tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+      return await tx.$transaction(async (_tx: PrismaClientInTransaction) => {
         const product = await _tx.product.create({
           data: {
             ...rest,
