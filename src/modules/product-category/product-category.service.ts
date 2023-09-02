@@ -26,7 +26,7 @@ export class ProductCategoryService {
     }
 
     try {
-      tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+      await tx.$transaction(async (_tx: PrismaClientInTransaction) => {
         const maxOrder = await this.getMaxOrder(shopId, _tx);
 
         const category = await _tx.productCategory.create({
@@ -84,7 +84,7 @@ export class ProductCategoryService {
     tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
     try {
-      return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+      return await tx.$transaction(async (_tx: PrismaClientInTransaction) => {
         const category = await _tx.productCategory.update({
           where: { id },
           data: rest,

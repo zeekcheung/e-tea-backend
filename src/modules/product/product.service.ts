@@ -92,7 +92,7 @@ export class ProductService {
     tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
     try {
-      return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+      return await tx.$transaction(async (_tx: PrismaClientInTransaction) => {
         const product = await xprisma.product.update({
           where: { id },
           data: rest,

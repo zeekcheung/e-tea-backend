@@ -25,7 +25,7 @@ export class ProductSpecificationService {
     }
 
     try {
-      return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+      return await tx.$transaction(async (_tx: PrismaClientInTransaction) => {
         const specification = await _tx.productSpecification.create({
           data: {
             ...rest,
@@ -80,7 +80,7 @@ export class ProductSpecificationService {
     tx: PrismaClientInTransaction | PrismaClientWithExtensions = xprisma,
   ) {
     try {
-      return tx.$transaction(async (_tx: PrismaClientInTransaction) => {
+      return await tx.$transaction(async (_tx: PrismaClientInTransaction) => {
         const specification = await _tx.productSpecification.update({
           where: { id },
           data: rest,
