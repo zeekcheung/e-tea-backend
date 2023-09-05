@@ -1,7 +1,10 @@
 import type { Prisma, Shop } from '@prisma/client';
 import {
   IsInt,
+  IsLatitude,
+  IsLongitude,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUrl,
@@ -22,6 +25,20 @@ export class CreateShopDto {
   @MaxLength(500)
   @IsOptional()
   introduction?: Shop['introduction'];
+
+  @IsNumber()
+  @IsLatitude({
+    message: 'latitude must be a latitude number',
+  })
+  @IsNotEmpty()
+  latitude: Shop['latitude'];
+
+  @IsNumber()
+  @IsLongitude({
+    message: 'longitude must be a longitude number',
+  })
+  @IsNotEmpty()
+  longitude: Shop['longitude'];
 
   @IsString()
   @MaxLength(100)

@@ -44,6 +44,8 @@ model Shop {
   avatarUrl    String
   introduction String @default("")
   grade        Float  @default(0.0)
+  latitude     Float
+  longitude    Float
   address      String
 
   // 店铺与用户的一对一关系

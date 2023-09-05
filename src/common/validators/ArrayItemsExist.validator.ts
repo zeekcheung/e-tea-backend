@@ -15,9 +15,8 @@ export class ArrayItemsExistValidator implements ValidatorConstraintInterface {
     if (!isArray(value)) {
       return false;
     }
-    // @ArrayNotEmpty
     if (!value.length) {
-      return false;
+      return true;
     }
 
     const sourceArray = args.constraints[0];

@@ -9,6 +9,8 @@ export const createDummyShops = async (prisma: PrismaClient) => {
       name: 'E-Tea',
       avatarUrl: 'https://picsum.photos/200',
       introduction: 'This is the first shop',
+      latitude: 22.66107390576057,
+      longitude: 113.42020520075879,
       address: 'ZhongShan',
       shopKeeperId: 1,
     },
